@@ -1,16 +1,36 @@
-import os
+import math
+import random
 from psychopy import prefs
 prefs.hardware['audioLib'] = ['sounddevice']
 
 from psychopy import visual, core, event
 
-def get_reaction_time(video_path, win, stimulus_frame):
+def get_reaction_time(video_path, win, stimulus_frame, enable_countdown=True, countdown_duration=None):
     frame_text = visual.TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
     movie = visual.MovieStim(win, filename=video_path, size=(None, None))
     clock = core.Clock()
 
     stimulus_time = stimulus_frame / movie.frameRate
     frame_counter = 0
+
+    if enable_countdown:
+        countdown_text = visual.TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
+        countdown_duration = countdown_duration if countdown_duration is not None else random.uniform(3, 5)
+        countdown_start = clock.getTime()
+        while True:
+            elapsed = clock.getTime() - countdown_start
+            if elapsed >= countdown_duration:
+                break
+            remaining = countdown_duration - elapsed
+            display_num = math.ceil(remaining)
+            if display_num <= 0:
+                break
+            countdown_text.setText(f'{display_num}')
+            countdown_text.draw()
+            win.flip()
+            keys = event.getKeys(keyList=['escape'])
+            if keys:
+                break
 
     clock.reset()
     mouse = event.Mouse()
