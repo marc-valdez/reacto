@@ -37,7 +37,8 @@ for clip in clips:
     movies[clip] = visual.MovieStim(win, filename=video_path, size=(None, None))
 
 # Main experiment loop
-for clip in clips:
+while clips:
+    clip = clips.pop(0)
     video_path = os.path.join(clips_dir, clip)
     stimulus_frame = int(os.path.basename(video_path).split('_')[0])
     movie = movies[clip]
@@ -53,6 +54,9 @@ for clip in clips:
     # Record valid reactions
     if reaction_type == 'pass':
         valid_rt.append(rt_ms)
+    else:
+        # Re-queue the clip for retry
+        clips.append(clip)
 
     # Display result
     display_result_screen(win, rt_ms, reaction_type)
