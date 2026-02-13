@@ -3,16 +3,42 @@ Countdown Module
 
 Functions for handling countdown logic in the reaction time test.
 """
-
 import random
+import math
+from psychopy import visual, core, event
 
-def get_countdown_duration(enable_countdown, last_duration):
-    """Determine the countdown duration for the next trial."""
-    if enable_countdown and last_duration is not None:
-        possible = [3, 4, 5]
-        possible.remove(last_duration)
-        return random.choice(possible)
-    elif enable_countdown:
-        return random.choice([3, 4, 5])
-    else:
-        return None
+
+class CountdownManager:
+    """Manages countdown durations and display to avoid immediate repeats without external state."""
+
+    def __init__(self, durations_list=None):
+        self.durations_list = durations_list if durations_list else [3, 4, 5]
+        self.last_duration = None
+
+    def perform_countdown(self, win, enable_countdown):
+        """Get a countdown duration and perform the countdown display, avoiding immediate repeats."""
+        if not enable_countdown:
+            return
+        choice = random.choice(self.durations_list)
+        # Avoid immediate repeat if possible
+        while choice == self.last_duration and len(self.durations_list) > 1:
+            choice = random.choice(self.durations_list)
+        self.last_duration = choice
+        duration = choice
+
+        countdown_text = visual.TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
+        countdown_start = core.getTime()
+        while True:
+            elapsed = core.getTime() - countdown_start
+            if elapsed >= duration:
+                break
+            remaining = duration - elapsed
+            display_num = math.ceil(remaining)
+            if display_num <= 0:
+                break
+            countdown_text.setText(f'{display_num}')
+            countdown_text.draw()
+            win.flip()
+            keys = event.getKeys(keyList=['escape'])
+            if keys:
+                break

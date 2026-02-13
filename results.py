@@ -42,7 +42,7 @@ def display_final_screen(win, valid_rt):
         main_color = 'white'
         subtitle_text = "No valid reactions"
 
-    main_stim = visual.TextStim(win, text=main_text, pos=(0, 0.3), color=main_color, height=0.3)
+    main_stim = visual.TextStim(win, text=main_text, pos=(0, 0.3), color=main_color, height=0.2)
     subtitle_stim = visual.TextStim(win, text=subtitle_text, pos=(0, 0.1), color='white', height=0.05)
     continue_stim = visual.TextStim(win, text="Press SPACE to exit", pos=(0, -0.2), color='white', height=0.05)
     main_stim.draw()
