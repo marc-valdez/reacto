@@ -30,21 +30,14 @@ clips_dir = 'clips'
 clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
 random.shuffle(clips)
 
-# Load movie stimuli
-movies = {}
-for clip in clips:
-    video_path = os.path.join(clips_dir, clip)
-    movies[clip] = visual.MovieStim(win, filename=video_path, size=(None, None))
+# Initialize movie stimulus
+movie = visual.MovieStim(win, filename="", size=(None, None))
 
 # Main experiment loop
 while clips:
     clip = clips.pop(0)
     video_path = os.path.join(clips_dir, clip)
     stimulus_frame = int(os.path.basename(video_path).split('_')[0])
-    movie = movies[clip]
-    if not movie._isLoaded:
-        movie = visual.MovieStim(win, filename=video_path, size=(None, None))
-        movies[clip] = movie
 
     # Determine countdown duration
     countdown_duration = get_countdown_duration(enable_countdown, last_duration)
@@ -71,9 +64,13 @@ while clips:
             if keys:
                 break
 
+    movie.load(video_path)
+
     # Measure reaction time
     rt_ms, reaction_type = get_reaction_time(movie, win, stimulus_frame)
-    print(f"{clip}: Reaction Time: {rt_ms:.2f} ms, Type: {reaction_type}")
+    print(f"[{clip}] Reaction Time: {rt_ms:.2f} ms, Type: {reaction_type}")
+
+    movie.unload()
 
     # Record valid reactions
     if reaction_type == 'pass':

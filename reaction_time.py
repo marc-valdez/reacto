@@ -4,11 +4,6 @@ Reaction Time Measurement Module
 This module contains functions for measuring reaction times in response to video stimuli.
 """
 
-import math
-import random
-from psychopy import prefs
-prefs.hardware['audioLib'] = ['sounddevice']
-
 from psychopy import visual, core, event
 
 def get_reaction_time(movie, win, stimulus_frame):
@@ -27,10 +22,12 @@ def get_reaction_time(movie, win, stimulus_frame):
     frame_text = visual.TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
     clock = core.Clock()
 
-    try:
-        stimulus_time = stimulus_frame / movie.frameRate
-    except AttributeError:
-        stimulus_time = 0  # Fallback if frameRate is not available
+    # Line 1298 of psychopy\visual\movies\__init__.py
+    # has a bug that makes movie.frameRate not work
+    # replace `return self._player.metadata.frameRate`
+    # with `return self._player._metadata.frameRate`
+    stimulus_time = stimulus_frame / movie.frameRate 
+    print(f"Stimulus time\t\t@ {stimulus_time:.2f}s")
     frame_counter = 0
 
     # Reset clock and mouse for reaction measurement
@@ -59,6 +56,7 @@ def get_reaction_time(movie, win, stimulus_frame):
                     break
             elif left_pressed and not left_pressed_prev:
                 reaction_time = movie.movieTime
+                print(f"Reaction detected\t@ {reaction_time:.2f}s")
                 if reaction_time < stimulus_time:
                     reaction_type = 'too-early'
                 else:
@@ -73,6 +71,4 @@ def get_reaction_time(movie, win, stimulus_frame):
         reaction_type = 'too_late'
         rt_ms = (movie.duration - stimulus_time) * 1000
 
-    # Cleanup
-    movie.stop()
     return rt_ms, reaction_type
