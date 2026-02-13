@@ -42,13 +42,37 @@ while clips:
     video_path = os.path.join(clips_dir, clip)
     stimulus_frame = int(os.path.basename(video_path).split('_')[0])
     movie = movies[clip]
+    if not movie._isLoaded:
+        movie = visual.MovieStim(win, filename=video_path, size=(None, None))
+        movies[clip] = movie
 
     # Determine countdown duration
     countdown_duration = get_countdown_duration(enable_countdown, last_duration)
     last_duration = countdown_duration
 
+    # Countdown phase
+    if enable_countdown:
+        import math
+        from psychopy import core, event
+        countdown_text = visual.TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
+        countdown_start = core.getTime()
+        while True:
+            elapsed = core.getTime() - countdown_start
+            if elapsed >= countdown_duration:
+                break
+            remaining = countdown_duration - elapsed
+            display_num = math.ceil(remaining)
+            if display_num <= 0:
+                break
+            countdown_text.setText(f'{display_num}')
+            countdown_text.draw()
+            win.flip()
+            keys = event.getKeys(keyList=['escape'])
+            if keys:
+                break
+
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(video_path, win, stimulus_frame, enable_countdown, countdown_duration, movie=movie)
+    rt_ms, reaction_type = get_reaction_time(movie, win, stimulus_frame)
     print(f"{clip}: Reaction Time: {rt_ms:.2f} ms, Type: {reaction_type}")
 
     # Record valid reactions

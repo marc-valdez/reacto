@@ -11,49 +11,27 @@ prefs.hardware['audioLib'] = ['sounddevice']
 
 from psychopy import visual, core, event
 
-def get_reaction_time(video_path, win, stimulus_frame, enable_countdown=True, countdown_duration=None, movie=None):
+def get_reaction_time(movie, win, stimulus_frame):
     """
     Measure reaction time to a stimulus in a video.
 
     Args:
-        video_path (str): Path to the video file.
+        movie: Pre-loaded MovieStim object.
         win: PsychoPy window object.
         stimulus_frame (int): Frame number where the stimulus appears.
-        enable_countdown (bool): Whether to show a countdown before the video.
-        countdown_duration (float): Duration of the countdown in seconds.
-        movie: Pre-loaded MovieStim object (optional).
 
     Returns:
         tuple: (reaction_time_ms, reaction_type) where reaction_type is 'pass', 'too-early', or 'too_late'.
     """
     # Initialize stimuli and clock
     frame_text = visual.TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
-    if movie is None:
-        movie = visual.MovieStim(win, filename=video_path, size=(None, None))
     clock = core.Clock()
 
-    stimulus_time = stimulus_frame / movie.frameRate
+    try:
+        stimulus_time = stimulus_frame / movie.frameRate
+    except AttributeError:
+        stimulus_time = 0  # Fallback if frameRate is not available
     frame_counter = 0
-
-    # Countdown phase
-    if enable_countdown:
-        countdown_text = visual.TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
-        countdown_duration = countdown_duration if countdown_duration is not None else random.uniform(3, 5)
-        countdown_start = clock.getTime()
-        while True:
-            elapsed = clock.getTime() - countdown_start
-            if elapsed >= countdown_duration:
-                break
-            remaining = countdown_duration - elapsed
-            display_num = math.ceil(remaining)
-            if display_num <= 0:
-                break
-            countdown_text.setText(f'{display_num}')
-            countdown_text.draw()
-            win.flip()
-            keys = event.getKeys(keyList=['escape'])
-            if keys:
-                break
 
     # Reset clock and mouse for reaction measurement
     clock.reset()
@@ -96,5 +74,5 @@ def get_reaction_time(video_path, win, stimulus_frame, enable_countdown=True, co
         rt_ms = (movie.duration - stimulus_time) * 1000
 
     # Cleanup
-    movie.unload()
+    movie.stop()
     return rt_ms, reaction_type
