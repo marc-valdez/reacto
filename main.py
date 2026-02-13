@@ -10,6 +10,7 @@ prefs.hardware['audioLib'] = ['sounddevice']
 
 from psychopy import visual
 import os
+import random
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import get_countdown_duration
@@ -27,6 +28,7 @@ last_duration = None
 # Load video clips
 clips_dir = 'clips'
 clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
+random.shuffle(clips)
 
 # Load movie stimuli
 movies = {}
