@@ -30,8 +30,11 @@ clips_dir = 'clips'
 clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
 random.shuffle(clips)
 
-# Initialize movie stimulus
-movie = visual.MovieStim(win, filename="", size=(None, None))
+# Preload movies
+movies = {}
+for clip in clips:
+    video_path = os.path.join(clips_dir, clip)
+    movies[clip] = visual.MovieStim(win, filename=video_path, size=(None, None))
 
 # Main experiment loop
 while clips:
@@ -64,13 +67,9 @@ while clips:
             if keys:
                 break
 
-    movie.load(video_path)
-
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(movie, win, stimulus_frame)
+    rt_ms, reaction_type = get_reaction_time(clip, movies, win, stimulus_frame)
     print(f"[{clip}] Reaction Time: {rt_ms:.2f} ms, Type: {reaction_type}")
-
-    movie.unload()
 
     # Record valid reactions
     if reaction_type == 'pass':

@@ -6,12 +6,13 @@ This module contains functions for measuring reaction times in response to video
 
 from psychopy import visual, core, event
 
-def get_reaction_time(movie, win, stimulus_frame):
+def get_reaction_time(clip, movies, win, stimulus_frame, framerate=60):
     """
     Measure reaction time to a stimulus in a video.
 
     Args:
-        movie: Pre-loaded MovieStim object.
+        clip: Video filename.
+        movies: Pre-loaded MovieStim objects.
         win: PsychoPy window object.
         stimulus_frame (int): Frame number where the stimulus appears.
 
@@ -19,6 +20,7 @@ def get_reaction_time(movie, win, stimulus_frame):
         tuple: (reaction_time_ms, reaction_type) where reaction_type is 'pass', 'too-early', or 'too_late'.
     """
     # Initialize stimuli and clock
+    movie = movies[clip]
     frame_text = visual.TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
     clock = core.Clock()
 
@@ -26,7 +28,7 @@ def get_reaction_time(movie, win, stimulus_frame):
     # has a bug that makes movie.frameRate not work
     # replace `return self._player.metadata.frameRate`
     # with `return self._player._metadata.frameRate`
-    stimulus_time = stimulus_frame / movie.frameRate 
+    stimulus_time = stimulus_frame / (movie.frameRate if (movie.frameRate is not None) else framerate)
     print(f"Stimulus time\t\t@ {stimulus_time:.2f}s")
     frame_counter = 0
 
@@ -34,14 +36,17 @@ def get_reaction_time(movie, win, stimulus_frame):
     clock.reset()
     mouse = event.Mouse()
     mouse.clickReset(buttons=[0])
-    left_pressed_prev = False
 
     # Main video playback loop
+    movie.replay()
     while not movie.isFinished:
+        # Frame display logic
         frame_counter += 1
-        movie.draw()
         frame_text.setText(f'Frame: {frame_counter}')
         frame_text.draw()
+        
+        # Display movie
+        movie.draw()
         win.flip()
 
         # Check for input events
@@ -50,24 +55,24 @@ def get_reaction_time(movie, win, stimulus_frame):
         left_pressed = pressed[0]
 
         # Detect reaction
-        if keys or (left_pressed and not left_pressed_prev):
-            if keys:
-                if keys[0][0] == 'escape':
-                    break
-            elif left_pressed and not left_pressed_prev:
-                reaction_time = movie.movieTime
-                print(f"Reaction detected\t@ {reaction_time:.2f}s")
-                if reaction_time < stimulus_time:
-                    reaction_type = 'too-early'
-                else:
-                    reaction_type = 'pass'
-                rt_ms = (reaction_time - stimulus_time) * 1000
-                break
-
-        left_pressed_prev = left_pressed
+        if keys and keys[0][0] == 'escape':
+            movie.pause() # Only pause but don't unload the player from memory.
+            break
+        elif left_pressed:
+            reaction_time = movie.movieTime
+            print(f"Reaction detected\t@ {reaction_time:.2f}s")
+            if reaction_time < stimulus_time:
+                movie.pause()
+                reaction_type = 'too-early'
+            else:
+                movie.unload() # Unload player from memory since we won't need it anymore.
+                reaction_type = 'pass'
+            rt_ms = (reaction_time - stimulus_time) * 1000
+            break
 
     # If no reaction detected, mark as too late
     if 'reaction_type' not in locals():
+        movie.pause()
         reaction_type = 'too_late'
         rt_ms = (movie.duration - stimulus_time) * 1000
 
