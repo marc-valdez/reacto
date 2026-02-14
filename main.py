@@ -38,19 +38,20 @@ random.shuffle(clips)
 movies = {}
 for clip in clips:
     video_path = os.path.join(clips_dir, clip)
-    movies[clip] = visual.MovieStim(win, filename=video_path, size=(None, None))
+    movies[clip] = visual.MovieStim(win, filename=video_path, size=(None, None), autoStart=False)
 
 # Main experiment loop
 while clips:
     clip = clips.pop(0)
     video_path = os.path.join(clips_dir, clip)
     stimulus_frame = int(os.path.basename(video_path).split('_')[0])
+    movie = movies[clip]
 
     # Countdown phase
     countdown_manager.perform_countdown(win, enable_countdown)
 
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(clip, movies, win, stimulus_frame)
+    rt_ms, reaction_type = get_reaction_time(movie, win, stimulus_frame)
     print(f"[{clip}] Reaction Time: {rt_ms:.2f} ms, Type: {reaction_type}")
 
     # Record valid reactions

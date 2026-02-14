@@ -6,21 +6,20 @@ This module contains functions for measuring reaction times in response to video
 
 from psychopy import visual, core, event
 
-def get_reaction_time(clip, movies, win, stimulus_frame, framerate=60):
+def get_reaction_time(movie, win, stimulus_frame, framerate=60):
     """
     Measure reaction time to a stimulus in a video.
 
     Args:
-        clip: Video filename.
-        movies: Pre-loaded MovieStim objects.
+        movie: Pre-loaded MovieStim object.
         win: PsychoPy window object.
         stimulus_frame (int): Frame number where the stimulus appears.
+        framerate: Video framerate as fallback/override.
 
     Returns:
         tuple: (reaction_time_ms, reaction_type) where reaction_type is 'pass', 'too-early', or 'too_late'.
     """
     # Initialize stimuli and clock
-    movie = movies[clip]
     frame_text = visual.TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
     clock = core.Clock()
 
@@ -29,7 +28,6 @@ def get_reaction_time(clip, movies, win, stimulus_frame, framerate=60):
     # replace `return self._player.metadata.frameRate`
     # with `return self._player._metadata.frameRate`
     stimulus_time = stimulus_frame / (movie.frameRate if (movie.frameRate is not None) else framerate)
-    print(f"Stimulus time\t\t@ {stimulus_time:.2f}s")
     frame_counter = 0
 
     # Reset clock and mouse for reaction measurement
@@ -60,7 +58,6 @@ def get_reaction_time(clip, movies, win, stimulus_frame, framerate=60):
             break
         elif left_pressed:
             reaction_time = movie.movieTime
-            print(f"Reaction detected\t@ {reaction_time:.2f}s")
             if reaction_time < stimulus_time:
                 movie.pause()
                 reaction_type = 'too-early'
