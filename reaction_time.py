@@ -4,7 +4,9 @@ Reaction Time Measurement Module
 This module contains functions for measuring reaction times in response to video stimuli.
 """
 
-from psychopy import visual, core, event
+from psychopy.visual import TextStim, MovieStim
+from psychopy.core import Clock
+from psychopy.event import Mouse, getKeys
 
 def get_reaction_time(movie, win, stimulus_frame, framerate=60):
     """
@@ -20,8 +22,8 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
         tuple: (reaction_time_ms, reaction_type) where reaction_type is 'pass', 'too-early', or 'too_late'.
     """
     # Initialize stimuli and clock
-    frame_text = visual.TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
-    clock = core.Clock()
+    frame_text = TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
+    clock = Clock()
 
     # Line 1298 of psychopy\visual\movies\__init__.py
     # has a bug that makes movie.frameRate not work
@@ -32,7 +34,7 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
 
     # Reset clock and mouse for reaction measurement
     clock.reset()
-    mouse = event.Mouse()
+    mouse = Mouse()
     mouse.clickReset(buttons=[0])
 
     # Main video playback loop
@@ -48,7 +50,7 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
         win.flip()
 
         # Check for input events
-        keys = event.getKeys(keyList=['escape'], timeStamped=clock)
+        keys = getKeys(keyList=['escape'], timeStamped=clock)
         pressed, times = mouse.getPressed(getTime=True)
         left_pressed = pressed[0]
 

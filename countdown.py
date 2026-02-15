@@ -5,7 +5,9 @@ Functions for handling countdown logic in the reaction time test.
 """
 import random
 import math
-from psychopy import visual, core, event
+from psychopy.visual import TextStim
+from psychopy.core import getTime
+from psychopy.event import getKeys
 
 
 class CountdownManager:
@@ -26,10 +28,10 @@ class CountdownManager:
         self.last_duration = choice
         duration = choice
 
-        countdown_text = visual.TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
-        countdown_start = core.getTime()
+        countdown_text = TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
+        countdown_start = getTime()
         while True:
-            elapsed = core.getTime() - countdown_start
+            elapsed = getTime() - countdown_start
             if elapsed >= duration:
                 break
             remaining = duration - elapsed
@@ -39,6 +41,6 @@ class CountdownManager:
             countdown_text.setText(f'{display_num}')
             countdown_text.draw()
             win.flip()
-            keys = event.getKeys(keyList=['escape'])
+            keys = getKeys(keyList=['escape'])
             if keys:
                 break

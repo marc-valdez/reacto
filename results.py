@@ -4,7 +4,8 @@ Results Display Module
 Functions for displaying result screens in the reaction time test.
 """
 
-from psychopy import visual, event
+from psychopy.visual import TextStim
+from psychopy.event import waitKeys
 
 def display_result_screen(win, rt_ms, reaction_type):
     """Display the result screen after each reaction time measurement."""
@@ -21,14 +22,14 @@ def display_result_screen(win, rt_ms, reaction_type):
         main_color = 'grey'
         subtitle_text = "Miss"
 
-    main_stim = visual.TextStim(win, text=main_text, pos=(0, 0.3), color=main_color, height=0.2)
-    subtitle_stim = visual.TextStim(win, text=subtitle_text, pos=(0, 0.1), color='white', height=0.05)
-    next_stim = visual.TextStim(win, text="Press SPACE to continue", pos=(0, -0.2), color='white', height=0.05)
+    main_stim = TextStim(win, text=main_text, pos=(0, 0.3), color=main_color, height=0.2)
+    subtitle_stim = TextStim(win, text=subtitle_text, pos=(0, 0.1), color='white', height=0.05)
+    next_stim = TextStim(win, text="Press SPACE to continue", pos=(0, -0.2), color='white', height=0.05)
     main_stim.draw()
     subtitle_stim.draw()
     next_stim.draw()
     win.flip()
-    event.waitKeys(keyList=['space'])
+    waitKeys(keyList=['space'])
 
 def display_final_screen(win, valid_rt):
     """Display the final screen with average reaction time or no data message."""
@@ -42,11 +43,11 @@ def display_final_screen(win, valid_rt):
         main_color = 'white'
         subtitle_text = "No valid reactions"
 
-    main_stim = visual.TextStim(win, text=main_text, pos=(0, 0.3), color=main_color, height=0.2)
-    subtitle_stim = visual.TextStim(win, text=subtitle_text, pos=(0, 0.1), color='white', height=0.05)
-    continue_stim = visual.TextStim(win, text="Press SPACE to exit", pos=(0, -0.2), color='white', height=0.05)
+    main_stim = TextStim(win, text=main_text, pos=(0, 0.3), color=main_color, height=0.2)
+    subtitle_stim = TextStim(win, text=subtitle_text, pos=(0, 0.1), color='white', height=0.05)
+    continue_stim = TextStim(win, text="Press SPACE to exit", pos=(0, -0.2), color='white', height=0.05)
     main_stim.draw()
     subtitle_stim.draw()
     continue_stim.draw()
     win.flip()
-    event.waitKeys(keyList=['space'])
+    waitKeys(keyList=['space'])

@@ -8,13 +8,13 @@ It displays videos, measures reaction times, and shows results.
 import os
 import sys
 import random
-from psychopy import visual
+from psychopy.visual import Window, MovieStim
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 
 # Initialize window
-win = visual.Window(size=(2560, 1440), fullscr=True, checkTiming=False, color='black')
+win = Window(size=(2560, 1440), fullscr=True, checkTiming=False, color='black')
 
 # Configuration
 enable_countdown = True                     # Set to False to disable countdown
@@ -38,7 +38,7 @@ random.shuffle(clips)
 movies = {}
 for clip in clips:
     video_path = os.path.join(clips_dir, clip)
-    movies[clip] = visual.MovieStim(win, filename=video_path, size=(None, None), autoStart=False)
+    movies[clip] = MovieStim(win, filename=video_path, size=(None, None), autoStart=False)
 
 # Main experiment loop
 while clips:
