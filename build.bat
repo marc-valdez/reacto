@@ -17,6 +17,8 @@ if exist clips (
 python -m PyInstaller --onefile --clean --name reacto --icon reacto.ico ^
 --hidden-import psychopy.visual.backends.pygletbackend ^
 --hidden-import psychopy.visual.movies ^
+--hidden-import psychopy.sound.backend_ptb ^
+--hidden-import psychopy.sound ^
 --exclude-module wx ^
 --exclude-module pyqt6 ^
 --exclude-module matplotlib ^
@@ -26,7 +28,6 @@ python -m PyInstaller --onefile --clean --name reacto --icon reacto.ico ^
 --exclude-module imageio ^
 --exclude-module imageio_ffmpeg ^
 --exclude-module python_vlc ^
---exclude-module soundfile ^
 --exclude-module ujson ^
 --exclude-module pyyaml ^
 --exclude-module msgpack ^

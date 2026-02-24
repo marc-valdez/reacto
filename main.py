@@ -9,6 +9,7 @@ import os
 import sys
 import random
 from psychopy.visual import Window, MovieStim, TextStim
+from psychopy.sound import Sound
 from psychopy.monitors import Monitor
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
@@ -34,22 +35,37 @@ else:
     # Running in development
     clips_dir = 'clips'
 clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
-random.shuffle(clips)
 
-# Preload movies
+# Preload movies and sounds
+"""Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py 
+after Line 264 to fix issues on audio devices with channels > 2
+```
+    # pad channels if needed
+    if clip.samples.shape[1] < self.speaker.channels:
+        padding = np.zeros((clip.samples.shape[0], int(self.speaker.channels - clip.samples.shape[1])))
+        clip.samples = np.hstack((clip.samples, padding))
+```
+"""
 loading_text = TextStim(win, color='white', height=0.05)
 movies = {}
+sounds = {}
 for clip in clips:
     video_path = os.path.join(clips_dir, clip)
+    wav_path = os.path.join(clips_dir, clip.replace('.mp4', '.mp3'))
     try:
-        print(f"Loading...{clip}")
-        loading_text.setText(f"Loading...{clip}")
+        print(f"Loading... {clip}")
+        loading_text.setText(f"Loading... {clip}")
         loading_text.draw()
-        movies[clip] = MovieStim(win, filename=video_path, size=win.size, autoStart=False)
         win.flip()
+
+        sounds[clip] = Sound(wav_path)
+        movies[clip] = MovieStim(win, filename=video_path, size=win.size, autoStart=False)
     except RuntimeError as e:
         print(f"Failed to load {clip}: {e}")
         exit(1)
+
+# Randomize clips
+random.shuffle(clips)
 
 # Main experiment loop
 while clips:
@@ -57,13 +73,14 @@ while clips:
     video_path = os.path.join(clips_dir, clip)
     stimulus_frame = int(os.path.basename(video_path).split('_')[0])
     movie = movies[clip]
+    sound = sounds[clip]
 
     # Countdown phase
     countdown_manager.perform_countdown(win, enable_countdown)
 
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(movie, win, stimulus_frame)
-    print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}")
+    rt_ms, reaction_type = get_reaction_time(movie, sound, win, stimulus_frame)
+    print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}\n")
 
     # Record valid reactions
     if reaction_type == 'pass':

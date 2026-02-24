@@ -8,12 +8,13 @@ from psychopy.visual import TextStim, MovieStim
 from psychopy.core import Clock
 from psychopy.event import Mouse, getKeys
 
-def get_reaction_time(movie, win, stimulus_frame, framerate=60):
+def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
     """
     Measure reaction time to a stimulus in a video.
 
     Args:
         movie: Pre-loaded MovieStim object.
+        sound: Pre-loaded Sound object.
         win: PsychoPy window object.
         stimulus_frame (int): Frame number where the stimulus appears.
         framerate: Video framerate as fallback/override.
@@ -40,6 +41,7 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
     # Main video playback loop
     frame_counter = 0
     movie.replay()
+    sound.play()
     while not movie.isFinished:
         # Frame display logic
         frame_counter += 1
@@ -52,20 +54,23 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
 
         # Check for input events
         keys = getKeys(keyList=['escape'], timeStamped=clock)
-        pressed, times = mouse.getPressed(getTime=True)
+        pressed = mouse.getPressed()
         left_pressed = pressed[0]
 
         # Detect reaction
         if keys and keys[0][0] == 'escape':
             movie.pause() # Only pause but don't unload the player from memory.
+            sound.stop()
             break
         elif left_pressed:
             reaction_time = movie.movieTime
             if reaction_time < stimulus_time:
                 movie.pause()
+                sound.stop()
                 reaction_type = 'too-early'
             else:
                 movie.unload() # Unload player from memory since we won't need it anymore.
+                sound.stop()
                 reaction_type = 'pass'
             rt_ms = (reaction_time - stimulus_time) * 1000
             print(f"paused@{reaction_time}, delta@{reaction_time - stimulus_time}")
@@ -74,7 +79,9 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
     # If no reaction detected, mark as too late
     if 'reaction_type' not in locals():
         movie.pause()
+        sound.stop()
         reaction_type = 'too_late'
         rt_ms = (movie.duration - stimulus_time) * 1000
 
     return rt_ms, reaction_type
+
