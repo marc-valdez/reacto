@@ -9,13 +9,14 @@ import os
 import sys
 import random
 from psychopy.visual import Window, MovieStim, TextStim
+from psychopy.monitors import Monitor
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 
 # Initialize window
-res = 2560, 1440
-win = Window(size=res, fullscr=True, checkTiming=False, color='black')
+mon = Monitor(name='monitor', width=1440)
+win = Window(monitor=mon, size=(2560, 1440), allowGUI=False, fullscr=False, checkTiming=False, color='black')
 
 # Configuration
 enable_countdown = True                    # Set to False to disable countdown
@@ -36,14 +37,15 @@ clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
 random.shuffle(clips)
 
 # Preload movies
+loading_text = TextStim(win, color='white', height=0.05)
 movies = {}
 for clip in clips:
     video_path = os.path.join(clips_dir, clip)
     try:
         print(f"Loading...{clip}")
-        frame_text = TextStim(win, text=f'Loading... {clip}', color='white', height=0.05)
-        frame_text.draw()
-        movies[clip] = MovieStim(win, filename=video_path, size=res, autoStart=False)
+        loading_text.setText(f"Loading...{clip}")
+        loading_text.draw()
+        movies[clip] = MovieStim(win, filename=video_path, size=win.size, autoStart=False)
         win.flip()
     except RuntimeError as e:
         print(f"Failed to load {clip}: {e}")
