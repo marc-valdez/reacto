@@ -8,17 +8,18 @@ It displays videos, measures reaction times, and shows results.
 import os
 import sys
 import random
-from psychopy.visual import Window, MovieStim
+from psychopy.visual import Window, MovieStim, TextStim
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 
 # Initialize window
-win = Window(size=(2560, 1440), fullscr=True, checkTiming=False, color='black')
+res = 2560, 1440
+win = Window(size=res, fullscr=True, checkTiming=False, color='black')
 
 # Configuration
-enable_countdown = True                     # Set to False to disable countdown
-countdown_durations = list(range(3, 10))    # Adjustable list of possible countdown durations (default from 3 to 5 seconds)
+enable_countdown = True                    # Set to False to disable countdown
+countdown_durations = list(range(3, 5))    # Adjustable list of possible countdown durations (default from 3 to 5 seconds)
 countdown_manager = CountdownManager(countdown_durations)
 
 # Data storage
@@ -38,7 +39,15 @@ random.shuffle(clips)
 movies = {}
 for clip in clips:
     video_path = os.path.join(clips_dir, clip)
-    movies[clip] = MovieStim(win, filename=video_path, size=(None, None), autoStart=False)
+    try:
+        print(f"Loading...{clip}")
+        frame_text = TextStim(win, text=f'Loading... {clip}', color='white', height=0.05)
+        frame_text.draw()
+        movies[clip] = MovieStim(win, filename=video_path, size=res, autoStart=False)
+        win.flip()
+    except RuntimeError as e:
+        print(f"Failed to load {clip}: {e}")
+        exit(1)
 
 # Main experiment loop
 while clips:
@@ -52,7 +61,7 @@ while clips:
 
     # Measure reaction time
     rt_ms, reaction_type = get_reaction_time(movie, win, stimulus_frame)
-    print(f"[{clip}] Reaction Time: {rt_ms:.2f} ms, Type: {reaction_type}")
+    print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}")
 
     # Record valid reactions
     if reaction_type == 'pass':

@@ -30,7 +30,7 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
     # replace `return self._player.metadata.frameRate`
     # with `return self._player._metadata.frameRate`
     stimulus_time = stimulus_frame / (movie.frameRate if (movie.frameRate is not None) else framerate)
-    frame_counter = 0
+    print(f"frame@{stimulus_frame}, time@{stimulus_time}, framerate@{movie.frameRate}")
 
     # Reset clock and mouse for reaction measurement
     clock.reset()
@@ -38,6 +38,7 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
     mouse.clickReset(buttons=[0])
 
     # Main video playback loop
+    frame_counter = 0
     movie.replay()
     while not movie.isFinished:
         # Frame display logic
@@ -67,6 +68,7 @@ def get_reaction_time(movie, win, stimulus_frame, framerate=60):
                 movie.unload() # Unload player from memory since we won't need it anymore.
                 reaction_type = 'pass'
             rt_ms = (reaction_time - stimulus_time) * 1000
+            print(f"paused@{reaction_time}, delta@{reaction_time - stimulus_time}")
             break
 
     # If no reaction detected, mark as too late
