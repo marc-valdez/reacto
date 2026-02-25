@@ -5,16 +5,16 @@ This module contains functions for measuring reaction times in response to video
 """
 
 from psychopy.visual import TextStim
-from psychopy.event import Mouse, getKeys
+from psychopy.event import Mouse
 
-def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
+def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
     """
     Measure reaction time to a stimulus in a video.
 
     Args:
+        win: PsychoPy window object.
         movie: Pre-loaded MovieStim object.
         sound: Pre-loaded Sound object.
-        win: PsychoPy window object.
         stimulus_frame (int): Frame number where the stimulus appears.
         framerate: Video framerate as fallback/override.
 
@@ -31,7 +31,7 @@ def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
     framerate = (movie.frameRate if (movie.frameRate is not None) else framerate)
     stimulus_time = stimulus_frame / framerate
 
-    print(f"frame@{stimulus_frame}, time@{stimulus_time}, framerate@{movie.frameRate}")
+    print(f"frame@{stimulus_frame}, framerate@{movie.frameRate}")
 
     # Reset mouse for reaction measurement
     mouse = Mouse()
@@ -62,8 +62,9 @@ def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
                 movie.unload() # Unload player from memory since we won't need it anymore.
                 sound.stop()
                 reaction_type = 'pass'
-            rt_ms = (reaction_time - stimulus_time) * 1000
-            print(f"paused@{reaction_time}, delta@{reaction_time - stimulus_time}")
+            delta = reaction_time - stimulus_time
+            rt_ms = delta * 1000
+            print(f"paused@{reaction_time} - stimulus@{stimulus_time} = delta@{delta}")
             break
 
     # If no reaction detected, mark as too late
@@ -71,6 +72,6 @@ def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
         movie.pause()
         sound.stop()
         reaction_type = 'too_late'
-        rt_ms = (movie.duration - stimulus_time) * 1000
+        rt_ms = 0.0
 
     return rt_ms, reaction_type

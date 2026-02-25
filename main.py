@@ -79,7 +79,7 @@ while clips:
     countdown_manager.perform_countdown(win, enable_countdown)
 
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(movie, sound, win, stimulus_frame)
+    rt_ms, reaction_type = get_reaction_time(win, movie, sound, stimulus_frame)
     print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}\n")
 
     # Record valid reactions
