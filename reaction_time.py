@@ -4,8 +4,7 @@ Reaction Time Measurement Module
 This module contains functions for measuring reaction times in response to video stimuli.
 """
 
-from psychopy.visual import TextStim, MovieStim
-from psychopy.core import Clock
+from psychopy.visual import TextStim
 from psychopy.event import Mouse, getKeys
 
 def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
@@ -22,47 +21,38 @@ def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
     Returns:
         tuple: (reaction_time_ms, reaction_type) where reaction_type is 'pass', 'too-early', or 'too_late'.
     """
-    # Initialize stimuli and clock
-    frame_text = TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
-    clock = Clock()
 
+    frame_text = TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
+    
     # Line 1298 of psychopy\visual\movies\__init__.py
     # has a bug that makes movie.frameRate not work
     # replace `return self._player.metadata.frameRate`
     # with `return self._player._metadata.frameRate`
-    stimulus_time = stimulus_frame / (movie.frameRate if (movie.frameRate is not None) else framerate)
+    framerate = (movie.frameRate if (movie.frameRate is not None) else framerate)
+    stimulus_time = stimulus_frame / framerate
+
     print(f"frame@{stimulus_frame}, time@{stimulus_time}, framerate@{movie.frameRate}")
 
-    # Reset clock and mouse for reaction measurement
-    clock.reset()
+    # Reset mouse for reaction measurement
     mouse = Mouse()
     mouse.clickReset(buttons=[0])
 
     # Main video playback loop
-    frame_counter = 0
     movie.replay()
     sound.play()
     while not movie.isFinished:
-        # Frame display logic
-        frame_counter += 1
-        frame_text.setText(f'Frame: {frame_counter}')
-        frame_text.draw()
-        
         # Display movie
         movie.draw()
+        frame = movie.movieTime * framerate
+        frame_text.setText(f'Frame: {frame:.0f}')
+        frame_text.draw()
         win.flip()
 
         # Check for input events
-        keys = getKeys(keyList=['escape'], timeStamped=clock)
         pressed = mouse.getPressed()
         left_pressed = pressed[0]
 
-        # Detect reaction
-        if keys and keys[0][0] == 'escape':
-            movie.pause() # Only pause but don't unload the player from memory.
-            sound.stop()
-            break
-        elif left_pressed:
+        if left_pressed:
             reaction_time = movie.movieTime
             if reaction_time < stimulus_time:
                 movie.pause()
@@ -84,4 +74,3 @@ def get_reaction_time(movie, sound, win, stimulus_frame, framerate=60):
         rt_ms = (movie.duration - stimulus_time) * 1000
 
     return rt_ms, reaction_type
-
