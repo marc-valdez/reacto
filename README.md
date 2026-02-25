@@ -27,7 +27,7 @@ Reacto is a reaction time testing application built with Python and PsychoPy. It
 To build the executable yourself:
 
 1. Install Python and dependencies: `pip install -r requirements.txt`
-2. Run `build.bat` to generate `reacto.exe`
+2. Run `build.bat` to generate `reacto.exe` inside `dist` directory
 
 ## Credits and Thanks
 
