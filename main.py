@@ -16,8 +16,8 @@ from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 
 # Initialize window
-mon = Monitor(name='monitor', width=1440)
-win = Window(monitor=mon, size=(2560, 1440), allowGUI=False, fullscr=False, checkTiming=False, color='black')
+mon = Monitor(name='monitor', width=1080)
+win = Window(monitor=mon, size=(1920, 1080), allowGUI=False, fullscr=False, checkTiming=False, color='black')
 
 # Configuration
 enable_countdown = True                    # Set to False to disable countdown
