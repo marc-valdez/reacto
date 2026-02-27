@@ -41,14 +41,17 @@ def display_final_screen(win, results):
         # Group results by color mode
         color_groups = {}
         all_rts = []
-        for clip_name, rt in results.items():
-            parts = clip_name.split('_')
-            if len(parts) >= 2:
-                color_mode = parts[1]
-                if color_mode not in color_groups:
-                    color_groups[color_mode] = []
-                color_groups[color_mode].append(rt)
-                all_rts.append(rt)
+        for clip_name, data in results.items():
+            rt = data['rt_ms']
+            reaction_type = data['type']
+            if reaction_type == 'pass':
+                parts = clip_name.split('_')
+                if len(parts) >= 2:
+                    color_mode = parts[1]
+                    if color_mode not in color_groups:
+                        color_groups[color_mode] = []
+                    color_groups[color_mode].append(rt)
+                    all_rts.append(rt)
         
         # Total average
         total_avg = sum(all_rts) / len(all_rts) if all_rts else 0
@@ -57,7 +60,7 @@ def display_final_screen(win, results):
         
         # Bottom text: averages per color mode
         bottom_lines = []
-        for color in ['default', 'protanopia', 'deuteranopia', 'tritanopia']:
+        for color in ['default', 'deuteranopia', 'protanopia', 'tritanopia']:
             if color in color_groups:
                 rt_list = color_groups[color]
                 avg = sum(rt_list) / len(rt_list)

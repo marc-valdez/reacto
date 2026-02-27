@@ -10,7 +10,7 @@ def export_results(results):
     """Export results to JSON file."""
     # Group results by game and color
     grouped = {}
-    for clip_name, rt in results.items():
+    for clip_name, data in results.items():
         parts = clip_name.split('_')
         if len(parts) >= 3:
             game = parts[2]
@@ -19,11 +19,11 @@ def export_results(results):
                 grouped[game] = {}
             if color not in grouped[game]:
                 grouped[game][color] = {}
-            grouped[game][color][clip_name] = rt
+            grouped[game][color][clip_name] = data
 
     # Ensure all games and colors are present
-    games = ['valorant', 'rivals']
-    colors = ['default', 'protanopia', 'deuteranopia', 'tritanopia']
+    games = ['rivals', 'valorant']
+    colors = ['default', 'deuteranopia', 'protanopia', 'tritanopia']
     for game in games:
         if game not in grouped:
             grouped[game] = {}

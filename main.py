@@ -25,7 +25,7 @@ enable_countdown = True                     # Set to False to disable countdown
 countdown_durations = [3, 4, 5]             # Adjustable list of possible countdown durations (default from 3 to 5 seconds)
 countdown_manager = CountdownManager(countdown_durations)
 
-# Data storage (dict: clip_name -> reaction_time_ms)
+# Data storage (dict: clip_name -> {'rt_ms': float, 'type': str})
 results = {}
 
 # Load video clips
@@ -83,13 +83,9 @@ while clips:
     rt_ms, reaction_type = get_reaction_time(win, movie, sound, stimulus_frame)
     print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}\n")
 
-    # Record valid reactions
-    if reaction_type == 'pass':
-        clip_name = clip.replace('.mp4', '')  # Remove extension for key
-        results[clip_name] = rt_ms
-    else:
-        # Re-queue the clip for retry
-        clips.append(clip)
+    # Record reaction
+    clip_name = clip.replace('.mp4', '')  # Remove extension for key
+    results[clip_name] = {'rt_ms': rt_ms, 'type': reaction_type}
 
     # Display result
     display_result_screen(win, rt_ms, reaction_type)
