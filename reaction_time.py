@@ -19,7 +19,7 @@ def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
         framerate: Video framerate as fallback/override.
 
     Returns:
-        tuple: (reaction_time_ms, reaction_type) where reaction_type is 'pass', 'too-early', or 'too_late'.
+        tuple: (reaction_time_ms, verdict) where verdict is 'pass', 'too-early', or 'too_late'.
     """
 
     frame_text = TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
@@ -55,21 +55,23 @@ def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
             if reaction_time < stimulus_time:
                 movie.pause()
                 if sound: sound.stop()
-                reaction_type = 'too-early'
+                verdict = 'too-early'
+                rt_ms = 0.0
+                break
             else:
                 movie.unload() # Unload player from memory since we won't need it anymore.
                 if sound: sound.stop()
-                reaction_type = 'pass'
+                verdict = 'pass'
             delta = reaction_time - stimulus_time
             rt_ms = delta * 1000
             print(f"paused@{reaction_time} - stimulus@{stimulus_time} = delta@{delta}")
             break
 
     # If no reaction detected, mark as too late
-    if 'reaction_type' not in locals():
+    if 'verdict' not in locals():
         movie.pause()
         if sound: sound.stop()
-        reaction_type = 'too_late'
+        verdict = 'too_late'
         rt_ms = 0.0
 
-    return rt_ms, reaction_type
+    return rt_ms, verdict

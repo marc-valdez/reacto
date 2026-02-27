@@ -26,8 +26,14 @@ enable_countdown = config.get_boolean('app', 'enable_countdown', True)
 countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
 countdown_manager = CountdownManager(countdown_durations)
 
-# Data storage (dict: clip_name -> {'rt_ms': float, 'type': str})
+# Data storage
 results = {}
+averages = {
+    "default": [],
+    "deuteranopia": [],
+    "protanopia": [],
+    "tritanopia": [],
+}
 
 # Load video clips
 if getattr(sys, 'frozen', False):
@@ -75,8 +81,13 @@ random.shuffle(clips)
 # Main experiment loop
 while clips:
     clip = clips.pop(0)
-    video_path = os.path.join(clips_dir, clip)
-    stimulus_frame = int(os.path.basename(video_path).split('_')[0])
+
+    # Get clip information from filename
+    filename = clip.split('.')[0].split('_')
+    stimulus_frame = int(filename[0])
+    color_mode = filename[1]
+    game = filename[2]
+
     movie = movies[clip]
     sound = sounds[clip]
 
@@ -84,21 +95,31 @@ while clips:
     countdown_manager.perform_countdown(win, enable_countdown)
 
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(win, movie, sound, stimulus_frame)
-    print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}\n")
+    rt_ms, verdict = get_reaction_time(win, movie, sound, stimulus_frame)
+    print(f"[{clip}] Reaction Time: {rt_ms} ms, Verdict: {verdict}")
+
+    # Update rolling average
+    if verdict == 'pass':
+        averages[color_mode].append(rt_ms)
+        print(f"Rolling Average of {color_mode}: {sum(averages[color_mode]) / len(averages[color_mode])}\n")
 
     # Record reaction
-    clip_name = clip.replace('.mp4', '')  # Remove extension for key
-    results[clip_name] = {'rt_ms': rt_ms, 'type': reaction_type}
+    results[clip] = {
+        'rt_ms': rt_ms, 
+        'verdict': verdict,
+        'stimulus_frame': stimulus_frame,
+        'color_mode': color_mode,
+        'game': game,
+    }
 
     # Display result
-    display_result_screen(win, rt_ms, reaction_type)
+    display_result_screen(win, rt_ms, verdict)
 
 # Export results
 export_results(results)
 
 # Display final results
-display_final_screen(win, results)
+display_final_screen(win, results, averages)
 
 # Cleanup
 win.close()
