@@ -19,10 +19,10 @@ class Result(db.Model):
     auth_code = db.Column(db.String(8), nullable=False)
     clip_name = db.Column(db.String(100), nullable=False)
     rt_ms = db.Column(db.Float, nullable=False)
-    reaction_type = db.Column(db.String(20), nullable=False)
-    game = db.Column(db.String(20))
-    color = db.Column(db.String(20))
+    verdict = db.Column(db.String(20), nullable=False)
     stimulus_frame = db.Column(db.Integer)
+    color_mode = db.Column(db.String(20))
+    game = db.Column(db.String(20))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 @app.route('/claim_code', methods=['POST'])
@@ -59,23 +59,23 @@ def submit_results():
 
     for clip_name, res in results.items():
         rt_ms = res.get('rt_ms')
-        reaction_type = res.get('type')
-        if rt_ms is None or reaction_type is None:
+        verdict = res.get('type')
+        if rt_ms is None or verdict is None:
             continue  # Skip invalid
-        # Extract game, color, stimulus_frame from clip_name
+        # Extract game, color_mode, stimulus_frame from clip_name
         parts = clip_name.split('_')
         stimulus_frame = int(parts[0]) if parts else 0
-        color = parts[1] if len(parts) > 1 else ''
+        color_mode = parts[1] if len(parts) > 1 else ''
         game = parts[2] if len(parts) > 2 else ''
 
         result = Result(
             auth_code=auth_code,
             clip_name=clip_name,
             rt_ms=rt_ms,
-            reaction_type=reaction_type,
-            game=game,
-            color=color,
-            stimulus_frame=stimulus_frame
+            verdict=verdict,
+            stimulus_frame=stimulus_frame,
+            color_mode=color_mode,
+            game=game
         )
         db.session.add(result)
     db.session.commit()
@@ -102,15 +102,16 @@ def export_csv():
     from io import StringIO
     si = StringIO()
     writer = csv.writer(si)
-    writer.writerow(['id', 'auth_code', 'clip_name', 'rt_ms', 'reaction_type', 'game', 'color', 'stimulus_frame', 'timestamp'])
+    writer.writerow(['id', 'auth_code', 'clip_name', 'rt_ms', 'verdict', 'stimulus_frame', 'color_mode', 'game', 'timestamp'])
     results = Result.query.all()
     for r in results:
-        writer.writerow([r.id, r.auth_code, r.clip_name, r.rt_ms, r.reaction_type, r.game, r.color, r.stimulus_frame, r.timestamp])
+        writer.writerow([r.id, r.auth_code, r.clip_name, r.rt_ms, r.verdict, r.stimulus_frame, r.color_mode, r.game, r.timestamp])
     output = si.getvalue()
     si.close()
     return output, 200, {'Content-Type': 'text/csv', 'Content-Disposition': 'attachment; filename=results.csv'}
 
 if __name__ == '__main__':
     with app.app_context():
+        db.drop_all()
         db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)

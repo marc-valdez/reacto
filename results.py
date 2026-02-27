@@ -7,13 +7,13 @@ Functions for displaying result screens in the reaction time test.
 from psychopy.visual import TextStim
 from psychopy.event import waitKeys
 
-def display_result_screen(win, rt_ms, reaction_type):
+def display_result_screen(win, rt_ms, verdict):
     """Display the result screen after each reaction time measurement."""
-    if reaction_type == 'pass':
+    if verdict == 'pass':
         main_text = f"{rt_ms:.1f} ms"
         main_color = 'green'
         subtitle_text = "Reaction Time"
-    elif reaction_type == 'too-early':
+    elif verdict == 'too-early':
         main_text = "Too Early"
         main_color = 'red'
         subtitle_text = "Miss"
@@ -43,8 +43,8 @@ def display_final_screen(win, results):
         all_rts = []
         for clip_name, data in results.items():
             rt = data['rt_ms']
-            reaction_type = data['type']
-            if reaction_type == 'pass':
+            verdict = data['type']
+            if verdict == 'pass':
                 parts = clip_name.split('_')
                 if len(parts) >= 2:
                     color_mode = parts[1]

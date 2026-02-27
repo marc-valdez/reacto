@@ -90,15 +90,15 @@ while clips:
     countdown_manager.perform_countdown(win, enable_countdown)
 
     # Measure reaction time
-    rt_ms, reaction_type = get_reaction_time(win, movie, sound, stimulus_frame)
-    print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {reaction_type}\n")
+    rt_ms, verdict = get_reaction_time(win, movie, sound, stimulus_frame)
+    print(f"\n[{clip}] Reaction Time: {rt_ms} ms, Type: {verdict}\n")
 
     # Record reaction
     clip_name = clip.replace('.mp4', '')  # Remove extension for key
-    results[clip_name] = {'rt_ms': rt_ms, 'type': reaction_type}
+    results[clip_name] = {'rt_ms': rt_ms, 'type': verdict}
 
     # Display result
-    display_result_screen(win, rt_ms, reaction_type)
+    display_result_screen(win, rt_ms, verdict)
 
 # Export results
 export_results(results, auth_code)

@@ -12,30 +12,30 @@ SERVER_URL = config.get_string('server', 'url', 'http://localhost:5000')
 
 def export_results(results, auth_code):
     """Submit results to server and save to local JSON."""
-    # Group results by game and color
+    # Group results by game and color_mode
     grouped = {}
     for clip_name, data in results.items():
         parts = clip_name.split('_')
         if len(parts) >= 3:
             game = parts[2]
-            color = parts[1]
+            color_mode = parts[1]
             if game not in grouped:
                 grouped[game] = {}
-            if color not in grouped[game]:
-                grouped[game][color] = {}
-            grouped[game][color][clip_name] = data
+            if color_mode not in grouped[game]:
+                grouped[game][color_mode] = {}
+            grouped[game][color_mode][clip_name] = data
 
-    # Ensure all games and colors are present
+    # Ensure all games and color_modes are present
     games = ['rivals', 'valorant']
-    colors = ['default', 'deuteranopia', 'protanopia', 'tritanopia']
+    color_modes = ['default', 'deuteranopia', 'protanopia', 'tritanopia']
     for game in games:
         if game not in grouped:
             grouped[game] = {}
-        for color in colors:
-            if color not in grouped[game]:
-                grouped[game][color] = {}
+        for color_mode in color_modes:
+            if color_mode not in grouped[game]:
+                grouped[game][color_mode] = {}
 
-    # Sort within each color
+    # Sort within each color_mode
     def get_sort_key(clip_name):
         parts = clip_name.split('_')
         if len(parts) >= 3:
@@ -44,9 +44,9 @@ def export_results(results, auth_code):
         return 0
 
     for game in grouped:
-        for color in grouped[game]:
-            sorted_clips = sorted(grouped[game][color].keys(), key=get_sort_key)
-            grouped[game][color] = {clip: grouped[game][color][clip] for clip in sorted_clips}
+        for color_mode in grouped[game]:
+            sorted_clips = sorted(grouped[game][color_mode].keys(), key=get_sort_key)
+            grouped[game][color_mode] = {clip: grouped[game][color_mode][clip] for clip in sorted_clips}
 
     # Save to local JSON
     json_path = f'results_{auth_code}.json'
