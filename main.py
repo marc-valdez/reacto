@@ -15,14 +15,15 @@ from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 from export import export_results
+from config import config
 
 # Initialize window
-mon = Monitor(name='monitor', width=1080)
-win = Window(monitor=mon, size=(1920, 1080), allowGUI=False, fullscr=False, checkTiming=False, color='black')
+mon = Monitor(name='monitor', width=config.get_int('display', 'monitor_width', 1080))
+win = Window(monitor=mon, size=(config.get_int('display', 'window_width', 1920), config.get_int('display', 'window_height', 1080)), allowGUI=False, fullscr=config.get_boolean('display', 'fullscreen', False), checkTiming=False, color='black')
 
 # Configuration
-enable_countdown = True                     # Set to False to disable countdown
-countdown_durations = [3, 4, 5]             # Adjustable list of possible countdown durations (default from 3 to 5 seconds)
+enable_countdown = config.get_boolean('app', 'enable_countdown', True)
+countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
 countdown_manager = CountdownManager(countdown_durations)
 
 # Data storage (dict: clip_name -> {'rt_ms': float, 'type': str})
@@ -31,10 +32,10 @@ results = {}
 # Load video clips
 if getattr(sys, 'frozen', False):
     # Running as bundled executable
-    clips_dir = os.path.join(os.path.dirname(sys.executable), 'clips')
+    clips_dir = os.path.join(os.path.dirname(sys.executable), config.get_string('app', 'clips_directory', 'clips'))
 else:
     # Running in development
-    clips_dir = 'clips'
+    clips_dir = config.get_string('app', 'clips_directory', 'clips')
 clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
 
 # Preload movies and sounds

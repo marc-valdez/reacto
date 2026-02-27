@@ -5,6 +5,7 @@ Functions for exporting reaction time results.
 """
 
 import json
+from config import config
 
 def export_results(results):
     """Export results to JSON file."""
