@@ -15,6 +15,10 @@ from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 from export import export_results
+import auth
+
+# Authenticate user
+auth_code = auth.authenticate()
 
 # Initialize window
 mon = Monitor(name='monitor', width=1080)
@@ -71,6 +75,8 @@ for clip in clips:
 # Randomize clips
 random.shuffle(clips)
 
+
+
 # Main experiment loop
 while clips:
     clip = clips.pop(0)
@@ -94,7 +100,7 @@ while clips:
     display_result_screen(win, rt_ms, reaction_type)
 
 # Export results
-export_results(results)
+export_results(results, auth_code)
 
 # Display final results
 display_final_screen(win, results)

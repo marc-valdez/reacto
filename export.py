@@ -6,7 +6,7 @@ Functions for exporting reaction time results.
 
 import json
 
-def export_results(results):
+def export_results(results, auth_code):
     """Export results to JSON file."""
     # Group results by game and color
     grouped = {}
@@ -50,7 +50,7 @@ def export_results(results):
         with open(json_path, 'r') as f:
             data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        data = []
-    data.append(grouped)
+        data = {}
+    data[auth_code] = grouped
     with open(json_path, 'w') as f:
         json.dump(data, f, indent=4)
