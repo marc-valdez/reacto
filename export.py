@@ -7,11 +7,14 @@ Functions for exporting reaction time results.
 import json
 from supabase import Client
 
-def export_results(results, client: Client=None):
+def export_results(results, test_duration, client: Client=None):
     """Export results to JSON file."""
     # Write to JSON
     with open("results.json", "w") as json_file:
-        json.dump(results, json_file, indent=4)
+        json.dump({
+            "test_duration": test_duration,
+            "results": results
+        }, json_file, indent=4)
         print("Results exported to 'results.json'")
 
     try:

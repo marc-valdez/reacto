@@ -8,6 +8,7 @@ It displays videos, measures reaction times, and shows results.
 import os
 import sys
 import random
+import time
 from psychopy.visual import Window, MovieStim, TextStim
 from psychopy.sound import Sound
 from psychopy.monitors import Monitor
@@ -17,6 +18,9 @@ from countdown import CountdownManager
 from export import export_results
 from config import config
 from auth import authenticate
+
+# Capture start time
+start_time = time.time()
 
 # Authentication
 client, session = None, None
@@ -128,8 +132,13 @@ while clips:
     # Display result
     display_result_screen(win, rt_ms, verdict)
 
+# Record end time and print total duration
+end_time = time.time()
+test_duration = end_time - start_time
+print(f"Test took: {test_duration} seconds")
+
 # Export results
-export_results(results, client)
+export_results(results, test_duration, client)
 
 # Display final results
 display_final_screen(win, averages)
@@ -137,5 +146,8 @@ display_final_screen(win, averages)
 # Cleanup
 win.close()
 if session:
+    response = client.table("participants").update({
+        "test_duration": test_duration
+    }).eq("id", session.user.id).execute()
     print("Signing out from Supabase...")
     client.auth.sign_out()
