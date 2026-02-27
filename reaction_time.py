@@ -37,7 +37,7 @@ def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
 
     # Main video playback loop
     movie.replay()
-    sound.play()
+    if sound: sound.play()
     while not movie.isFinished:
         # Display movie
         movie.draw()
@@ -54,11 +54,11 @@ def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
             reaction_time = movie.movieTime
             if reaction_time < stimulus_time:
                 movie.pause()
-                sound.stop()
+                if sound: sound.stop()
                 reaction_type = 'too-early'
             else:
                 movie.unload() # Unload player from memory since we won't need it anymore.
-                sound.stop()
+                if sound: sound.stop()
                 reaction_type = 'pass'
             delta = reaction_time - stimulus_time
             rt_ms = delta * 1000
@@ -68,7 +68,7 @@ def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
     # If no reaction detected, mark as too late
     if 'reaction_type' not in locals():
         movie.pause()
-        sound.stop()
+        if sound: sound.stop()
         reaction_type = 'too_late'
         rt_ms = 0.0
 

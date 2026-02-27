@@ -38,7 +38,7 @@ else:
 clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
 
 # Preload movies and sounds
-"""Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py 
+"""Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py
 after Line 264 to fix issues on audio devices with channels > 2
 ```
     # pad channels if needed
@@ -59,7 +59,10 @@ for clip in clips:
         loading_text.draw()
         win.flip()
 
-        sounds[clip] = Sound(wav_path)
+        if os.path.exists(wav_path):
+            sounds[clip] = Sound(wav_path)
+        else:
+            sounds[clip] = None
         movies[clip] = MovieStim(win, filename=video_path, size=win.size, autoStart=False)
     except RuntimeError as e:
         print(f"Failed to load {clip}: {e}")
