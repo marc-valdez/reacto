@@ -7,11 +7,19 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
 rmdir /s /q dist 2>nul
-REM rmdir /s /q build 2>nul
+rmdir /s /q build 2>nul
 
 if exist clips (
     mkdir "dist\clips" 2>nul
     xcopy "clips\*" "dist\clips\" /E /I /Y >nul
+)
+
+if exist example.configuration.ini (
+    copy example.configuration.ini dist\example.configuration.ini >nul
+)
+
+if exist README.md   (
+    copy README.md dist\README.md >nul
 )
 
 python -m PyInstaller --onefile --clean --name reacto --icon reacto.ico ^

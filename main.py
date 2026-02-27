@@ -9,9 +9,12 @@ import os
 import sys
 import random
 import time
+from pathlib import Path
+
 from psychopy.visual import Window, MovieStim, TextStim
 from psychopy.sound import Sound
 from psychopy.monitors import Monitor
+
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
@@ -51,14 +54,15 @@ averages = {
     "tritanopia": [],
 }
 
-# Load video clips
-if getattr(sys, 'frozen', False):
-    # Running as bundled executable
-    clips_dir = os.path.join(os.path.dirname(sys.executable), config.get_string('app', 'clips_directory', 'clips'))
+# Load clip filenames
+if hasattr(sys, 'frozen'):
+    # Bundled (PyInstaller / Nuitka)
+    base_path = Path(sys.executable).parent
 else:
-    # Running in development
-    clips_dir = config.get_string('app', 'clips_directory', 'clips')
-clips = [clip for clip in os.listdir(clips_dir) if clip.endswith('.mp4')]
+    # Development
+    base_path = Path(__file__).parent
+clips_dir = base_path / config.get_string('app', 'clips_directory', 'clips')
+clips = [f.name for f in clips_dir.glob("*.mp4")]
 
 # Preload movies and sounds
 """Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py
