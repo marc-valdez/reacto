@@ -21,6 +21,11 @@ def authenticate():
 
     print(f"Logged in as {email}.")
 
-    supabase.rpc("create_participant_if_not_exists").execute()
+    try:
+        supabase.rpc("init_participant_or_block").execute()
+    except Exception:
+        print("You have already completed this test.")
+        supabase.auth.sign_out()
+        exit()
 
     return supabase, session
