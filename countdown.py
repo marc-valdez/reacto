@@ -5,10 +5,9 @@ Functions for handling countdown logic in the reaction time test.
 """
 import random
 import math
-from psychopy.visual import TextStim
+from psychopy.visual import TextStim, Window
 from psychopy.core import getTime
 from psychopy.event import getKeys
-
 
 class CountdownManager:
     """Manages countdown durations and display to avoid immediate repeats without external state."""
@@ -17,7 +16,7 @@ class CountdownManager:
         self.durations_list = durations_list if durations_list else [3, 4, 5]
         self.last_duration = None
 
-    def perform_countdown(self, win, enable_countdown):
+    def perform_countdown(self, win: Window, enable_countdown: bool):
         """Get a countdown duration and perform the countdown display, avoiding immediate repeats."""
         if not enable_countdown:
             return

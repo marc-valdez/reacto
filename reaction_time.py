@@ -4,10 +4,12 @@ Reaction Time Measurement Module
 This module contains functions for measuring reaction times in response to video stimuli.
 """
 
-from psychopy.visual import TextStim
+from psychopy.visual import TextStim, Window
+from psychopy.sound import Sound
+from psychopy.visual.movie import MovieStim
 from psychopy.event import Mouse
 
-def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
+def get_reaction_time(win: Window, movie: MovieStim, sound: Sound, stimulus_frame: int, framerate=60):
     """
     Measure reaction time to a stimulus in a video.
 

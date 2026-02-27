@@ -16,7 +16,7 @@ if exist clips (
 )
 
 if exist example.configuration.ini (
-    copy example.configuration.ini dist\example.configuration.ini >nul
+    copy example.configuration.ini dist\configuration.ini >nul
 )
 
 if exist README.md   (

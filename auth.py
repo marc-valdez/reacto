@@ -1,4 +1,3 @@
-import os
 from supabase import create_client
 from config import config
 

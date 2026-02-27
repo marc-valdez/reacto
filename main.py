@@ -11,7 +11,8 @@ import random
 import time
 from pathlib import Path
 
-from psychopy.visual import Window, MovieStim, TextStim
+from psychopy.visual import Window, TextStim
+from psychopy.visual.movie import MovieStim
 from psychopy.sound import Sound
 from psychopy.monitors import Monitor
 
