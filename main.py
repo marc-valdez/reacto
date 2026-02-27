@@ -76,8 +76,6 @@ for clip in clips:
 # Randomize clips
 random.shuffle(clips)
 
-
-
 # Main experiment loop
 while clips:
     clip = clips.pop(0)
