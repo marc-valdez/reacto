@@ -5,7 +5,7 @@ Reacto is a reaction time testing application built with Python and PsychoPy. It
 ## Features
 
 - Displays video clips from the `clips` directory
-- Measures reaction time to specific frames in videos
+- Measures reaction time against pre-determined stimulus frames in videos
 - Supports countdown timers before each test
 - Records and displays results
 - Built as a standalone executable for easy distribution
@@ -13,13 +13,14 @@ Reacto is a reaction time testing application built with Python and PsychoPy. It
 ## Requirements
 
 - Windows (built with PyInstaller)
-- Python 3.10 or higher
+- Python 3.10 (limited by psychopy)
+- [UV](https://github.com/astral-sh/uv)
 - Video clips in MP4 format and corresponding audio files in MP3 format placed in a `clips` directory next to the executable
 - Clip filenames must follow the format `{stimulus_frame}_{color_mode}_{game}.{extension}`, where:
   - `stimulus_frame` is the frame number (starting from 0) where the reaction stimulus appears
   - `color_mode` specifies the color mode (e.g., default, deuteranopia, protanopia, tritanopia)
   - `game` indicates the game or context of the clip
-  - `extension` can be `.mp3` or `.mp4`
+  - `extension` can be `.mp3` and/or `.mp4`
 
 ## Configuration
 
@@ -40,7 +41,8 @@ The app uses `configuration.ini` for settings. Edit this file to customize:
 
 To build the executable yourself:
 
-1. Install Python and dependencies: `pip install -r requirements.txt`
+1. Install UV: ```powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"```
+2. Install dependencies: `uv pip install -r requirements.txt`
 2. Run `build.bat` to generate `reacto.exe` inside `dist` directory
 
 ## Credits and Thanks
