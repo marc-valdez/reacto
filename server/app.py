@@ -86,22 +86,33 @@ def generate_codes():
     import random
     import string
     count = request.get_json().get('count', 100)
+
+    # Clear existing codes
+    Code.query.delete()
+    db.session.commit()
+
+    # Generate new codes
     codes = set()
     while len(codes) < count:
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
         codes.add(code)
     for c in codes:
-        if not Code.query.filter_by(code=c).first():
-            db.session.add(Code(code=c))
+        db.session.add(Code(code=c))
     db.session.commit()
     return jsonify({'success': True, 'message': f'Generated {len(codes)} codes'})
+
+@app.route('/export_codes', methods=['GET'])
+def export_codes():
+    codes = Code.query.filter_by(claimed=False).all()
+    output = '\n'.join(code.code for code in codes)
+    return output, 200, {'Content-Type': 'text/plain', 'Content-Disposition': 'attachment; filename=valid_codes.txt'}
 
 @app.route('/export_csv', methods=['GET'])
 def export_csv():
     import csv
     from io import StringIO
-    si = StringIO()
-    writer = csv.writer(si)
+    si = StringIO(newline='')
+    writer = csv.writer(si, lineterminator='\n')
     writer.writerow(['id', 'auth_code', 'clip_name', 'rt_ms', 'verdict', 'stimulus_frame', 'color_mode', 'game', 'timestamp'])
     results = Result.query.all()
     for r in results:
@@ -112,6 +123,26 @@ def export_csv():
 
 if __name__ == '__main__':
     with app.app_context():
-        db.drop_all()
-        db.create_all()
+        if not os.path.exists('reacto.db'):
+            db.create_all()
+            # Generate initial codes only once
+            if Code.query.count() == 0:
+                import random
+                import string
+                codes = set()
+                while len(codes) < 100:
+                    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+                    codes.add(code)
+                for c in codes:
+                    db.session.add(Code(code=c))
+                db.session.commit()
+        else:
+            db.create_all()
+    # Export unused codes to a .txt file on server launch
+    with app.app_context():
+        codes = Code.query.filter_by(claimed=False).all()
+        with open('valid_codes.txt', 'w', encoding='utf-8') as file:
+            file.write('\n'.join(code.code for code in codes))
+        print("Unused codes exported to 'valid_codes.txt'")
+
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -180,5 +180,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-results.json
+results_*.json
+exported_results.csv
 configuration.ini
+valid_codes.txt
