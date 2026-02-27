@@ -14,18 +14,19 @@ from psychopy.monitors import Monitor
 from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
+from export import export_results
 
 # Initialize window
 mon = Monitor(name='monitor', width=1080)
 win = Window(monitor=mon, size=(1920, 1080), allowGUI=False, fullscr=False, checkTiming=False, color='black')
 
 # Configuration
-enable_countdown = True                    # Set to False to disable countdown
-countdown_durations = list(range(3, 5))    # Adjustable list of possible countdown durations (default from 3 to 5 seconds)
+enable_countdown = True                     # Set to False to disable countdown
+countdown_durations = [3, 4, 5]             # Adjustable list of possible countdown durations (default from 3 to 5 seconds)
 countdown_manager = CountdownManager(countdown_durations)
 
-# Data storage
-valid_rt = []
+# Data storage (dict: clip_name -> reaction_time_ms)
+results = {}
 
 # Load video clips
 if getattr(sys, 'frozen', False):
@@ -84,7 +85,8 @@ while clips:
 
     # Record valid reactions
     if reaction_type == 'pass':
-        valid_rt.append(rt_ms)
+        clip_name = clip.replace('.mp4', '')  # Remove extension for key
+        results[clip_name] = rt_ms
     else:
         # Re-queue the clip for retry
         clips.append(clip)
@@ -92,8 +94,11 @@ while clips:
     # Display result
     display_result_screen(win, rt_ms, reaction_type)
 
+# Export results
+export_results(results)
+
 # Display final results
-display_final_screen(win, valid_rt)
+display_final_screen(win, results)
 
 # Cleanup
 win.close()

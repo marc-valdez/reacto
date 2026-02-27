@@ -31,8 +31,6 @@ def get_reaction_time(win, movie, sound, stimulus_frame, framerate=60):
     framerate = (movie.frameRate if (movie.frameRate is not None) else framerate)
     stimulus_time = stimulus_frame / framerate
 
-    print(f"frame@{stimulus_frame}, framerate@{movie.frameRate}")
-
     # Reset mouse for reaction measurement
     mouse = Mouse()
     mouse.clickReset(buttons=[0])
