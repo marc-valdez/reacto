@@ -2,9 +2,10 @@ import os
 import random
 import string
 import sys
+from config import config
 
-AUTH_FILE = 'auth_codes.txt'
-USED_FILE = 'used_codes.txt'
+AUTH_FILE = config.get_string('auth', 'auth_codes_file', 'auth_codes.txt')
+USED_FILE = config.get_string('auth', 'used_codes_file', 'used_codes.txt')
 
 def generate_codes():
     codes = set()
