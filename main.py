@@ -25,8 +25,13 @@ if config.get_boolean('auth', 'enable_supabase', False):
     client, session = authenticate()
 
 # Initialize window
-mon = Monitor(name='monitor', width=config.get_int('display', 'monitor_width', 1080))
-win = Window(monitor=mon, size=(config.get_int('display', 'window_width', 1920), config.get_int('display', 'window_height', 1080)), allowGUI=False, fullscr=config.get_boolean('display', 'fullscreen', False), checkTiming=False, color='black')
+mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1080))
+win = Window(
+    monitor=mon, checkTiming=False, color='black',
+    size=(config.get_int('display', 'window_width', 1920), config.get_int('display', 'window_height', 1080)), 
+    allowGUI=config.get_boolean('display', 'borderless', False), 
+    fullscr=config.get_boolean('display', 'fullscreen', False)
+)
 
 # Configuration
 enable_countdown = config.get_boolean('app', 'enable_countdown', True)
