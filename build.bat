@@ -23,7 +23,6 @@ python -m PyInstaller --onefile --clean --name reacto --icon reacto.ico ^
 --exclude-module pyqt6 ^
 --exclude-module matplotlib ^
 --exclude-module psutil ^
---exclude-module websockets ^
 --exclude-module openpyxl ^
 --exclude-module imageio ^
 --exclude-module imageio_ffmpeg ^

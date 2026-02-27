@@ -16,6 +16,13 @@ from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 from export import export_results
 from config import config
+from auth import authenticate
+
+# Authentication
+client, session = None, None
+if config.get_boolean('auth', 'enable_supabase', False):
+    print("Authenticating with Supabase...")
+    client, session = authenticate()
 
 # Initialize window
 mon = Monitor(name='monitor', width=config.get_int('display', 'monitor_width', 1080))
@@ -27,7 +34,7 @@ countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5
 countdown_manager = CountdownManager(countdown_durations)
 
 # Data storage
-results = {}
+results = []
 averages = {
     "default": [],
     "deuteranopia": [],
@@ -104,22 +111,26 @@ while clips:
         print(f"Rolling Average of {color_mode}: {sum(averages[color_mode]) / len(averages[color_mode])}\n")
 
     # Record reaction
-    results[clip] = {
+    results.append({
+        'filename': clip,
         'rt_ms': rt_ms, 
         'verdict': verdict,
         'stimulus_frame': stimulus_frame,
         'color_mode': color_mode,
         'game': game,
-    }
+    })
 
     # Display result
     display_result_screen(win, rt_ms, verdict)
 
 # Export results
-export_results(results)
+export_results(results, client)
 
 # Display final results
-display_final_screen(win, results, averages)
+display_final_screen(win, averages)
 
 # Cleanup
 win.close()
+if session:
+    print("Signing out from Supabase...")
+    client.auth.sign_out()
