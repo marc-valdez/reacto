@@ -5,7 +5,7 @@ from countdown import CountdownManager
 from results import display_result_screen, display_final_screen
 
 def press_space_to_continue(win):
-    footer_message = visual.TextStim(win, text="Press SPACE to continue...", height=0.03, pos=(0, -0.9))
+    footer_message = visual.TextStim(win, text="Press SPACE to continue...", height=0.05, pos=(0, -0.9))
     footer_message.draw()
     win.flip()
     event.waitKeys(keyList=['space'])
@@ -111,6 +111,17 @@ def run_tutorial(win):
     explain_countdown(win)
     mini_test(win)
     transition_to_test(win)
+
+def confirm_tutorial():
+    while True:
+        user_input = input("Would you like to run the tutorial? Y/N: ")
+        if user_input.lower() in ['y', 'yes']:
+            return True
+        elif user_input.lower() in ['n', 'no']:
+            print("Skipping tutorial...")
+            return False
+        else:
+            print("Invalid input. Please enter Y or N.")
 
 if __name__ == "__main__":
     win = visual.Window(fullscr=True, color="black")

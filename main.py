@@ -22,15 +22,19 @@ from countdown import CountdownManager
 from export import export_results
 from config import config
 from auth import authenticate
-
-# Capture start time
-start_time = time.time()
+from tutorial import run_tutorial, confirm_tutorial
 
 # Authentication
 client, session = None, None
 if config.get_boolean('auth', 'enable_supabase', False):
     print("Authenticating with Supabase...")
     client, session = authenticate()
+
+# Configuration
+enable_countdown = config.get_boolean('app', 'enable_countdown', True)
+countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
+countdown_manager = CountdownManager(countdown_durations)
+enable_tutorial = confirm_tutorial()
 
 # Initialize window
 mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1080))
@@ -41,10 +45,8 @@ win = Window(
     fullscr=config.get_boolean('display', 'fullscreen', False)
 )
 
-# Configuration
-enable_countdown = config.get_boolean('app', 'enable_countdown', True)
-countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
-countdown_manager = CountdownManager(countdown_durations)
+# Onboard participants with tutorial
+if enable_tutorial: run_tutorial(win)
 
 # Data storage
 results = []
@@ -98,6 +100,9 @@ for clip in clips:
 
 # Randomize clips
 random.shuffle(clips)
+
+# Capture start time
+start_time = time.time()
 
 # Main experiment loop
 while clips:
