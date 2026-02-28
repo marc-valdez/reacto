@@ -10,7 +10,7 @@ from reaction_time import get_reaction_time
 from asset_loader import load_clips, load_images
 
 def press_space_to_continue(win: Window):
-    continue_text = "Press SPACE to continue..."
+    continue_text = "Press SPACE to continue"
     shadow_footer = TextStim(win, text=continue_text, height=0.05, pos=(0.002, -0.9002), color='black', opacity=0.7)
     footer_message = TextStim(win, text=continue_text, height=0.05, pos=(0, -0.9))
     shadow_footer.draw()
@@ -18,7 +18,14 @@ def press_space_to_continue(win: Window):
     win.flip()
     event.waitKeys(keyList=['space'])
 
+def draw_mouse_click(win: Window):
+    mouse_image_path = os.path.join('onboarding', 'mouse-left-button-svgrepo-com.png')
+    mouse_image = ImageStim(win, image=mouse_image_path, units='pix', size=(512, 512), pos=(0, -0.5), color=('grey'), opacity=0.33)
+    mouse_image.draw()
+
 def explain_reacto(win: Window):
+    draw_mouse_click(win)
+
     # Display the welcome text in a larger font size
     welcome_message = TextStim(win, text="Welcome to Reacto!", height=0.1, pos=(0, 0.2))
     welcome_message.draw()
@@ -26,7 +33,7 @@ def explain_reacto(win: Window):
     # Display the explanation text in a normal font size
     explanation_message = TextStim(win, text=(
         "This is a reaction time test designed to measure how quickly you can respond to visual stimuli.\n\n"
-        "You will see a countdown, followed by a stimulus. Your goal is to react as quickly as possible."
+        "You will see a countdown, followed by a stimulus. Your goal is to react as quickly as possible using your left mouse button."
     ), height=0.05, pos=(0, -0.2))
     explanation_message.draw()
 
@@ -69,6 +76,7 @@ def explain_countdown(win: Window):
         "When it reaches zero, the stimulus will appear.\n"
         "Focus during the countdown and be ready to react."
     ), height=0.05)
+    draw_mouse_click(win)
     message.draw()
     press_space_to_continue(win)
 
