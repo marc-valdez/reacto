@@ -6,10 +6,8 @@ It displays videos, measures reaction times, and shows results.
 """
 
 import os
-import sys
 import random
 import time
-from pathlib import Path
 
 from psychopy.visual import Window, TextStim
 from psychopy.visual.movie import MovieStim
@@ -23,6 +21,7 @@ from export import export_results
 from config import config
 from auth import authenticate
 from tutorial import run_tutorial, confirm_tutorial
+from asset_loader import load_clips
 
 # Authentication
 client, session = None, None
@@ -35,6 +34,7 @@ enable_countdown = config.get_boolean('app', 'enable_countdown', True)
 countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
 countdown_manager = CountdownManager(countdown_durations)
 enable_tutorial = confirm_tutorial()
+clips_dir = config.get_string('app', 'clips_directory', 'clips')
 
 # Initialize window
 mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1080))
@@ -57,15 +57,6 @@ averages = {
     "tritanopia": [],
 }
 
-# Load clip filenames
-if hasattr(sys, 'frozen'):
-    # Bundled (PyInstaller / Nuitka)
-    base_path = Path(sys.executable).parent
-else:
-    # Development
-    base_path = Path(__file__).parent
-clips_dir = base_path / config.get_string('app', 'clips_directory', 'clips')
-clips = [f.name for f in clips_dir.glob("*.mp4")]
 
 # Preload movies and sounds
 """Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py
@@ -80,6 +71,7 @@ after Line 264 to fix issues on audio devices with channels > 2
 loading_text = TextStim(win, color='white', height=0.05)
 movies = {}
 sounds = {}
+clips = load_clips(clips_dir)
 for clip in clips:
     video_path = os.path.join(clips_dir, clip)
     wav_path = os.path.join(clips_dir, clip.replace('.mp4', '.mp3'))
