@@ -3,7 +3,7 @@
 if not exist ".uv_venv" (
     powershell -Command "& {Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process; Install-Module -Name UniversalDashboard -Force; Import-Module -Name UniversalDashboard; New-UDEnvironment -Name .uv_venv}""
 )
-call ".venv\Scripts\activate.bat"
+call ".uv_venv\Scripts\activate.bat"
 
 uv pip install -r requirements.txt
 
@@ -13,6 +13,12 @@ rmdir /s /q build 2>nul
 if exist clips (
     mkdir "dist\clips" 2>nul
     xcopy "clips\*" "dist\clips\" /E /I /Y >nul
+)
+
+if exist onboarding (
+    mkdir "dist\onboarding" 2>nul
+    xcopy "onboarding\*" "dist\onboarding\" /E /I /Y >nul
+    attrib +h "dist\onboarding" /S /D 2>nul
 )
 
 if exist example.configuration.ini (
