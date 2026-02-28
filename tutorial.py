@@ -1,17 +1,19 @@
 import os
-import sys
 from pathlib import Path
 from psychopy import event
-from psychopy.visual import Window, TextStim
+from psychopy.visual import ImageStim, Window, TextStim
 from psychopy.visual.movie import MovieStim
 
 from countdown import CountdownManager
 from results import display_result_screen, display_final_screen
 from reaction_time import get_reaction_time
-from asset_loader import load_clips
+from asset_loader import load_clips, load_images
 
 def press_space_to_continue(win: Window):
-    footer_message = TextStim(win, text="Press SPACE to continue...", height=0.05, pos=(0, -0.9))
+    continue_text = "Press SPACE to continue..."
+    shadow_footer = TextStim(win, text=continue_text, height=0.05, pos=(0.002, -0.9002), color='black', opacity=0.7)
+    footer_message = TextStim(win, text=continue_text, height=0.05, pos=(0, -0.9))
+    shadow_footer.draw()
     footer_message.draw()
     win.flip()
     event.waitKeys(keyList=['space'])
@@ -32,15 +34,33 @@ def explain_reacto(win: Window):
     press_space_to_continue(win)
 
 def show_image_stim_examples(win: Window):
-    examples = [
-        ("Example 1: Too Early", "Reacting before the stimulus appears is too early."),
-        ("Example 2: Too Late", "Reacting after the stimulus disappears is too late."),
-        ("Example 3: Just Right", "Reacting within the optimal window is just right.")
+    pngs = load_images('onboarding')
+    images = [ImageStim(win, image=png) for png in pngs.values()]
+    descriptions = [
+        "Reacting before the stimulus appears is too early.",
+        "Reacting after the clip ends is too late.",
+        "Reacting within the optimal window is just right."
     ]
 
-    for title, description in examples:
-        message = TextStim(win, text=f"{title}\n\n{description}", height=0.05)
-        message.draw()
+    for i, description in enumerate(descriptions):
+        full_text = f"{description}"
+        shadow_message = TextStim(
+            win, 
+            text=full_text, 
+            height=0.051, 
+            pos=(0.002, -0.102), # Position is shifted slightly right (0.004) and down (-0.004)
+            color='black',
+            opacity=0.7)         # Slight transparency for realism
+        main_message = TextStim(
+            win, 
+            text=full_text,
+            pos=(0, -0.1),
+            height=0.05,
+            color='white')
+
+        images[i].draw()
+        shadow_message.draw()
+        main_message.draw()
         press_space_to_continue(win)
 
 def explain_countdown(win: Window):
