@@ -85,21 +85,23 @@ def transition_to_test(win: Window):
             run_tutorial(win)
             break
         elif 'p' in keys:
-            message = TextStim(win, text="Proceeding to the test...", height=0.05)
-            message.draw()
             win.flip()
             break
 
-def confirm_tutorial():
+def confirm_tutorial(win: Window):
+    message = TextStim(win, text=(
+        "Would you like to go through the tutorial before starting the test?\n\n"
+        "Press 'Y' to proceed or 'N' to skip."
+    ), height=0.05)
+    message.draw()
+    win.flip()
     while True:
-        user_input = input("Would you like to run the tutorial? Y/N: ")
-        if user_input.lower() in ['y', 'yes']:
+        keys = event.waitKeys(keyList=['y', 'n'])
+        if 'y' in keys:
             return True
-        elif user_input.lower() in ['n', 'no']:
+        elif 'n' in keys:
             print("Skipping tutorial...")
             return False
-        else:
-            print("Invalid input. Please enter Y or N.")
 
 def run_tutorial(win: Window):
     clips = load_clips('onboarding')

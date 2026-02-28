@@ -33,7 +33,6 @@ if config.get_boolean('auth', 'enable_supabase', False):
 enable_countdown = config.get_boolean('app', 'enable_countdown', True)
 countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
 countdown_manager = CountdownManager(countdown_durations)
-enable_tutorial = confirm_tutorial()
 clips_dir = config.get_string('app', 'clips_directory', 'clips')
 
 # Initialize window
@@ -46,6 +45,7 @@ win = Window(
 )
 
 # Onboard participants with tutorial
+enable_tutorial = confirm_tutorial(win)
 if enable_tutorial: run_tutorial(win)
 
 # Data storage
@@ -56,7 +56,6 @@ averages = {
     "protanopia": [],
     "tritanopia": [],
 }
-
 
 # Preload movies and sounds
 """Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py
