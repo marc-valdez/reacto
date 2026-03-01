@@ -51,7 +51,7 @@ The app uses `configuration.ini` for settings. Copy `example.configuration.ini` 
 | `window_width` | Integer | `1920` | Window width in pixels |
 | `window_height` | Integer | `1080` | Window height in pixels |
 | `fullscreen` | Boolean | `True` | Run in fullscreen mode |
-| `borderless` | Boolean | `True` | Remove window borders (when not fullscreen) |
+| `borderless` | Boolean | `False` | Remove window borders (when not fullscreen) |
 
 ### `[auth]` Section
 

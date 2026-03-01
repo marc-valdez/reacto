@@ -32,11 +32,11 @@ countdown_manager = CountdownManager(countdown_durations)
 clips_dir = config.get_string('app', 'clips_directory', 'clips')
 
 # Initialize window
-mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1080))
+mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1920))
 win = Window(
     monitor=mon, checkTiming=False, color='black',
     size=(config.get_int('display', 'window_width', 1920), config.get_int('display', 'window_height', 1080)), 
-    allowGUI=config.get_boolean('display', 'borderless', False), 
+    allowGUI=not config.get_boolean('display', 'borderless', False), 
     fullscr=config.get_boolean('display', 'fullscreen', False)
 )
 
