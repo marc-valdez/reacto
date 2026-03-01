@@ -2,12 +2,11 @@ import os
 from pathlib import Path
 from psychopy import event
 from psychopy.visual import ImageStim, Window, TextStim
-from psychopy.visual.movie import MovieStim
 
 from countdown import CountdownManager
-from results import display_result_screen, display_final_screen
+from results import display_result_screen
 from reaction_time import get_reaction_time
-from asset_loader import load_clips, load_images
+from asset_loader import load_clips, load_images, get_base_path
 
 def press_space_to_continue(win: Window):
     continue_text = "Press SPACE to continue"
@@ -80,22 +79,21 @@ def explain_countdown(win: Window):
     message.draw()
     press_space_to_continue(win)
 
-def mini_test(win: Window, clips: list[str]):
+def mini_test(win: Window, clips: list[str], movies: dict, sounds: dict=None):
     countdown_manager = CountdownManager()
 
     message = TextStim(win, text="Mini-Test: React to the stimulus in three trials.", height=0.05)
     message.draw()
     press_space_to_continue(win)
 
-    for i, clip in enumerate(clips):
+    for clip in clips:
         countdown_manager.perform_countdown(win, enable_countdown=True)
 
         # Load the video clip and measure reaction time
         stimulus_frame = int(clip.split('_')[0])
-        video_path = os.path.join('onboarding', clip)
-
-        movie = MovieStim(win, filename=video_path, size=win.size, autoStart=False)
-        rt_ms, verdict = get_reaction_time(win, movie, None, stimulus_frame)
+        movie = movies[clip]
+        sound = sounds[clip]
+        rt_ms, verdict = get_reaction_time(win, movie, sound, stimulus_frame)
 
         display_result_screen(win, rt_ms=rt_ms, verdict=verdict)
 
@@ -132,12 +130,12 @@ def confirm_tutorial(win: Window):
             return False
 
 def run_tutorial(win: Window):
-    clips = load_clips('onboarding')
+    clips, movies, sounds = load_clips(win, Path('onboarding'))
 
     explain_reacto(win)
     show_image_stim_examples(win)
     explain_countdown(win)
-    mini_test(win, clips)
+    mini_test(win, clips, movies, sounds)
     transition_to_test(win)
 
 if __name__ == "__main__":
