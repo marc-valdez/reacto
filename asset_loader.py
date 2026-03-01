@@ -13,6 +13,9 @@ def get_base_path() -> Path:
     else:
         return Path(__file__).parent
 
+# Global base_path
+base_path = get_base_path()
+
 # Preload movies and sounds
 """Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py
 after Line 264 to fix issues on audio devices with channels > 2
@@ -24,7 +27,6 @@ after Line 264 to fix issues on audio devices with channels > 2
 ```
 """
 def load_clips(win: Window, dir: Path, randomize: bool=False):
-    base_path = get_base_path()
     clips_dir = base_path / dir
 
     movies = {}
@@ -52,7 +54,6 @@ def load_clips(win: Window, dir: Path, randomize: bool=False):
     return clips, movies, sounds
 
 def load_images(win: Window, dir: Path):
-    base_path = get_base_path()
     images_dir = base_path / dir
     return [ImageStim(win, image=f) for f in images_dir.glob("*.png")]
 

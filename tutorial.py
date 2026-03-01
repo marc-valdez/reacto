@@ -5,7 +5,7 @@ from psychopy.visual import ImageStim, Window, TextStim
 from countdown import CountdownManager
 from results import display_result_screen
 from reaction_time import get_reaction_time
-from asset_loader import load_clips, load_images, get_base_path
+from asset_loader import load_clips, load_images, base_path
 
 def press_space_to_continue(win: Window):
     continue_text = "Press SPACE to continue"
@@ -17,7 +17,6 @@ def press_space_to_continue(win: Window):
     event.waitKeys(keyList=['space'])
 
 def draw_mouse_click(win: Window):
-    base_path = get_base_path()
     mouse_image_path = base_path / Path('onboarding', 'mouse-left-button-svgrepo-com.png')
     mouse_image = ImageStim(win, image=mouse_image_path, units='pix', size=(512, 512), pos=(0, -0.5), color=('grey'), opacity=0.33)
     mouse_image.draw()
