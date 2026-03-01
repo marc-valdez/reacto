@@ -12,12 +12,6 @@ Reacto is a reaction time testing application built with Python and PsychoPy. It
 - Exports results to JSON and optionally to Supabase
 - Built as a standalone executable for easy distribution
 
-## Requirements
-
-- Windows (built with PyInstaller)
-- Python 3.10 (limited by PsychoPy)
-- [UV](https://github.com/astral-sh/uv) package manager
-
 ### Directory Structure
 
 The following directories must be placed next to the executable:
@@ -76,8 +70,11 @@ The app uses `configuration.ini` for settings. Copy `example.configuration.ini` 
 5. React to stimuli in video clips by clicking the left mouse button
 6. View your results at the end of the test
 
+---
+
 ## Building from Source
 
+### Windows
 To build the executable yourself:
 
 1. Install UV:
@@ -89,6 +86,9 @@ To build the executable yourself:
    - Copy `clips/` and `onboarding/` directories to `dist/`
    - Copy `example.configuration.ini` as `configuration.ini`
    - Generate `reacto.exe` inside `dist/` directory
+
+### Mac and Linux
+GitHub Actions workflows are available in the [`.github/workflows/`](.github/workflows/:1) directory for CI and build automation.
 
 ## Credits and Thanks
 
@@ -103,7 +103,8 @@ Special thanks to the developers and communities behind these projects for makin
 
 ## Privacy
 
-When Supabase authentication is enabled, the application collects your **email address** for authentication purposes. Test results are stored in the Supabase database associated with your account.
+When Supabase authentication is enabled, the application collects your **email address** for authentication purposes.  
+The release builds include my public Reacto database keys and is enabled by default.
 
 ## License
 
