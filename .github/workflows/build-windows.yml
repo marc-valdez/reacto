@@ -1,0 +1,122 @@
+name: Build Windows
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install UPX
+        run: choco install upx -y
+
+      - name: Install dependencies
+        run: uv pip install -r requirements.txt --system
+
+      - name: Build executable
+        run: |
+          python -m PyInstaller --onefile --clean --name reacto --icon reacto.ico `
+            --hidden-import psychopy.visual.backends.pygletbackend `
+            --hidden-import psychopy.visual.movies `
+            --hidden-import psychopy.sound.backend_ptb `
+            --hidden-import psychopy.sound `
+            --exclude-module arabic-reshaper `
+            --exclude-module astunparse `
+            --exclude-module beautifulsoup4 `
+            --exclude-module blosc2 `
+            --exclude-module contourpy `
+            --exclude-module cycler `
+            --exclude-module decorator `
+            --exclude-module elementpath `
+            --exclude-module esprima `
+            --exclude-module et-xmlfile `
+            --exclude-module fonttools `
+            --exclude-module freetype-py `
+            --exclude-module gevent `
+            --exclude-module gitdb `
+            --exclude-module gitpython `
+            --exclude-module greenlet `
+            --exclude-module imageio `
+            --exclude-module imageio_ffmpeg `
+            --exclude-module jedi `
+            --exclude-module json-tricks `
+            --exclude-module json-tricks `
+            --exclude-module kiwisolver `
+            --exclude-module matplotlib `
+            --exclude-module meshpy `
+            --exclude-module moviepy `
+            --exclude-module msgpack `
+            --exclude-module msgpack-numpy `
+            --exclude-module ndindex `
+            --exclude-module numexpr `
+            --exclude-module opencv-python `
+            --exclude-module openpyxl `
+            --exclude-module parso `
+            --exclude-module pillow `
+            --exclude-module proglog `
+            --exclude-module psutil `
+            --exclude-module psychtoolbox `
+            --exclude-module py-cpuinfo `
+            --exclude-module pyarrow `
+            --exclude-module pyparallel `
+            --exclude-module pypiwin32 `
+            --exclude-module pyqt6 `
+            --exclude-module pyqt6-qt6 `
+            --exclude-module pyqt6-sip `
+            --exclude-module pyserial `
+            --exclude-module python-bidi `
+            --exclude-module python-dotenv `
+            --exclude-module python-gitlab `
+            --exclude-module python-vlc `
+            --exclude-module pywin32 `
+            --exclude-module pywinhook `
+            --exclude-module pyyaml `
+            --exclude-module pyzmq `
+            --exclude-module questplus `
+            --exclude-module requests-toolbelt `
+            --exclude-module smmap `
+            --exclude-module soupsieve `
+            --exclude-module tables `
+            --exclude-module tqdm `
+            --exclude-module ujson `
+            --exclude-module wheel `
+            --exclude-module wxpython `
+            --exclude-module xarray `
+            --exclude-module xmlschema `
+            --exclude-module zope-event `
+            --exclude-module zope-interface `
+            main.py
+
+      - name: Prepare dist folder
+        run: |
+          if (Test-Path "clips") {
+            New-Item -ItemType Directory -Force -Path "dist\clips"
+            Copy-Item -Recurse "clips\*" "dist\clips\"
+          }
+          if (Test-Path "onboarding") {
+            New-Item -ItemType Directory -Force -Path "dist\onboarding"
+            Copy-Item -Recurse "onboarding\*" "dist\onboarding\"
+          }
+          if (Test-Path "example.configuration.ini") {
+            Copy-Item "example.configuration.ini" "dist\configuration.ini"
+          }
+          if (Test-Path "README.md") {
+            Copy-Item "README.md" "dist\README.md"
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reacto-windows
+          path: dist/
