@@ -5,7 +5,7 @@ from psychopy.visual import ImageStim, Window, TextStim
 from countdown import CountdownManager
 from results import display_result_screen
 from reaction_time import get_reaction_time
-from asset_loader import load_clips, load_images, base_path
+from asset_loader import load_clips, load_images
 
 def press_space_to_continue(win: Window):
     continue_text = "Press SPACE to continue"
@@ -16,13 +16,13 @@ def press_space_to_continue(win: Window):
     win.flip()
     event.waitKeys(keyList=['space'])
 
-def draw_image(win: Window, filename: str, color: str, opacity=0.33):
+def draw_image(win: Window, base_path: Path, filename: str, color: str, opacity=0.33):
     png = base_path / Path('onboarding', filename)
     image = ImageStim(win, image=png, units='pix', size=(512, 512), color=(color), opacity=opacity)
     image.draw()
 
-def explain_reacto(win: Window):
-    draw_image(win, 'mouse-left-button-svgrepo-com.png', 'grey')
+def explain_reacto(win: Window, base_path: Path):
+    draw_image(win, base_path, 'mouse-left-button-svgrepo-com.png', 'grey')
 
     # Display the welcome text in a larger font size
     welcome_message = TextStim(win, text="Welcome to Reacto!", height=0.1, pos=(0, 0.2))
@@ -38,8 +38,8 @@ def explain_reacto(win: Window):
     # Add the footer message
     press_space_to_continue(win)
 
-def show_image_stim_examples(win: Window):
-    images = load_images(win, Path('onboarding'))
+def show_image_stim_examples(win: Window, base_path: Path):
+    images = load_images(win, base_path, Path('onboarding'))
     descriptions = [
         "Reacting before the head is fully visible is too early.",
         "Reacting after the clip ends is too late.",
@@ -64,20 +64,20 @@ def show_image_stim_examples(win: Window):
 
         images[i].draw()
         if i == 2:
-            draw_image(win, "checkmark-circle-svgrepo-com", "green", 0.5)
+            draw_image(win, base_path, "checkmark-circle-svgrepo-com", "green", 0.5)
         else:
-            draw_image(win, "cross-circle-svgrepo-com.png", "red", 0.5)
+            draw_image(win, base_path, "cross-circle-svgrepo-com.png", "red", 0.5)
         shadow_message.draw()
         main_message.draw()
         press_space_to_continue(win)
 
-def explain_countdown(win: Window):
+def explain_countdown(win: Window, base_path: Path):
     message = TextStim(win, text=(
         "The countdown helps you prepare.\n\n"
         "When it reaches zero, the stimulus will appear.\n"
         "Focus during the countdown and be ready to react."
     ), height=0.05)
-    draw_image(win, 'mouse-left-button-svgrepo-com.png', 'grey')
+    draw_image(win, base_path, 'mouse-left-button-svgrepo-com.png', 'grey')
     message.draw()
     press_space_to_continue(win)
 
@@ -131,12 +131,12 @@ def confirm_tutorial(win: Window):
             print("Skipping tutorial...")
             return False
 
-def run_tutorial(win: Window):
-    clips, movies, sounds = load_clips(win, Path('onboarding'))
+def run_tutorial(win: Window, base_path: Path):
+    clips, movies, sounds = load_clips(win, base_path, Path('onboarding'))
 
-    explain_reacto(win)
-    show_image_stim_examples(win)
-    explain_countdown(win)
+    explain_reacto(win, base_path)
+    show_image_stim_examples(win, base_path)
+    explain_countdown(win, base_path)
     mini_test(win, clips, movies, sounds)
     transition_to_test(win)
 
