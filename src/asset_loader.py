@@ -16,17 +16,19 @@ after Line 264 to fix issues on audio devices with channels > 2
         clip.samples = np.hstack((clip.samples, padding))
 ```
 """
-def load_clips(win: Window, base_path: Path, dir: Path, randomize: bool=False):
+
+
+def load_clips(win: Window, base_path: Path, dir: Path, randomize: bool = False):
     clips_dir = base_path / dir
 
     movies = {}
     sounds = {}
     clips = [f.name for f in clips_dir.glob("*.mp4")]
 
-    loading_text = TextStim(win, color='white', height=0.05)
+    loading_text = TextStim(win, color="white", height=0.05)
     for clip in clips:
         video_path = clips_dir / clip
-        audio_path = clips_dir / clip.replace('.mp4', '.mp3')
+        audio_path = clips_dir / clip.replace(".mp4", ".mp3")
 
         print(f"Loading... {clip}")
         loading_text.setText(f"Loading... {clip}")
@@ -37,11 +39,15 @@ def load_clips(win: Window, base_path: Path, dir: Path, randomize: bool=False):
             sounds[clip] = Sound(audio_path)
         else:
             sounds[clip] = None
-        movies[clip] = MovieStim(win, filename=video_path, size=win.size, autoStart=False)
-    
+        movies[clip] = MovieStim(
+            win, filename=video_path, size=win.size, autoStart=False
+        )
+
     # Randomize clips
-    if randomize: random.shuffle(clips)
+    if randomize:
+        random.shuffle(clips)
     return clips, movies, sounds
+
 
 def load_images(win: Window, base_path: Path, dir: Path):
     images_dir = base_path / dir
@@ -49,7 +55,8 @@ def load_images(win: Window, base_path: Path, dir: Path):
     images.sort()
     return [ImageStim(win, image=f, units="pix", size=win.size) for f in images]
 
+
 if __name__ == "__main__":
     win = Window()
-    clips = load_clips(win, Path('clips'))
-    images = load_images(win, Path('onboarding'))
+    clips = load_clips(win, Path("clips"))
+    images = load_images(win, Path("onboarding"))

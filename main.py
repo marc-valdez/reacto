@@ -22,36 +22,42 @@ from src.tutorial import run_tutorial, confirm_tutorial
 from src.asset_loader import load_clips
 
 # Global Base Path
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     base_path = Path(sys.executable).parent
 else:
     base_path = Path(__file__).parent
 
 # Configuration
 config = Config(base_path)
-enable_countdown = config.get_boolean('app', 'enable_countdown', True)
-countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
+enable_countdown = config.get_boolean("app", "enable_countdown", True)
+countdown_durations = config.get_int_list("app", "countdown_durations", [3, 4, 5])
 countdown_manager = CountdownManager(countdown_durations)
-clips_dir = config.get_string('app', 'clips_directory', 'clips')
+clips_dir = Path(config.get_string("app", "clips_directory", "clips"))
 
 # Authentication
 client, session = None, None
-if config.get_boolean('auth', 'enable_supabase', False):
+if config.get_boolean("auth", "enable_supabase", False):
     print("Authenticating with Supabase...")
     client, session = authenticate(config)
 
 # Initialize window
-mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1920))
+mon = Monitor(name="monitor", width=config.get_int("display", "window_width", 1920))
 win = Window(
-    monitor=mon, checkTiming=False, color='black',
-    size=(config.get_int('display', 'window_width', 1920), config.get_int('display', 'window_height', 1080)), 
-    allowGUI=not config.get_boolean('display', 'borderless', False), 
-    fullscr=config.get_boolean('display', 'fullscreen', False)
+    monitor=mon,
+    checkTiming=False,
+    color="black",
+    size=(
+        config.get_int("display", "window_width", 1920),
+        config.get_int("display", "window_height", 1080),
+    ),
+    allowGUI=not config.get_boolean("display", "borderless", False),
+    fullscr=config.get_boolean("display", "fullscreen", False),
 )
 
 # Onboard participants with tutorial
 enable_tutorial = confirm_tutorial(win)
-if enable_tutorial: run_tutorial(win, base_path)
+if enable_tutorial:
+    run_tutorial(win, base_path)
 
 # Data storage
 results = []
@@ -73,7 +79,7 @@ while clips:
     clip = clips.pop(0)
 
     # Get clip information from filename
-    filename = clip.split('.')[0].split('_')
+    filename = clip.split(".")[0].split("_")
     stimulus_frame = int(filename[0])
     color_mode = filename[1]
     game = filename[2]
@@ -89,19 +95,23 @@ while clips:
     print(f"[{clip}] Reaction Time: {rt_ms} ms, Verdict: {verdict}")
 
     # Update rolling average
-    if verdict == 'pass':
+    if verdict == "pass":
         averages[color_mode].append(rt_ms)
-        print(f"Rolling Average of {color_mode}: {sum(averages[color_mode]) / len(averages[color_mode])}\n")
+        print(
+            f"Rolling Average of {color_mode}: {sum(averages[color_mode]) / len(averages[color_mode])}\n"
+        )
 
     # Record reaction
-    results.append({
-        'filename': clip,
-        'rt_ms': rt_ms, 
-        'verdict': verdict,
-        'stimulus_frame': stimulus_frame,
-        'color_mode': color_mode,
-        'game': game,
-    })
+    results.append(
+        {
+            "filename": clip,
+            "rt_ms": rt_ms,
+            "verdict": verdict,
+            "stimulus_frame": stimulus_frame,
+            "color_mode": color_mode,
+            "game": game,
+        }
+    )
 
     # Display result
     display_result_screen(win, rt_ms, verdict)
@@ -119,9 +129,12 @@ display_final_screen(win, averages)
 
 # Cleanup
 win.close()
-if session:
-    response = client.table("participants").update({
-        "test_duration": test_duration
-    }).eq("id", session.user.id).execute()
+if client and session and session.user:
+    response = (
+        client.table("participants")
+        .update({"test_duration": test_duration})
+        .eq("id", session.user.id)
+        .execute()
+    )
     print("Signing out from Supabase...")
     client.auth.sign_out()

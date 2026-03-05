@@ -3,11 +3,13 @@ Countdown Module
 
 Functions for handling countdown logic in the reaction time test.
 """
+
 import random
 import math
 from psychopy.visual import TextStim, Window
 from psychopy.core import getTime
 from psychopy.event import getKeys
+
 
 class CountdownManager:
     """Manages countdown durations and display to avoid immediate repeats without external state."""
@@ -27,7 +29,7 @@ class CountdownManager:
         self.last_duration = choice
         duration = choice
 
-        countdown_text = TextStim(win, text='', pos=(0, 0), color='white', height=0.5)
+        countdown_text = TextStim(win, text="", pos=(0, 0), color="white", height=0.5)
         countdown_start = getTime()
         while True:
             elapsed = getTime() - countdown_start
@@ -37,9 +39,9 @@ class CountdownManager:
             display_num = math.ceil(remaining)
             if display_num <= 0:
                 break
-            countdown_text.setText(f'{display_num}')
+            countdown_text.setText(f"{display_num}")
             countdown_text.draw()
             win.flip()
-            keys = getKeys(keyList=['escape'])
+            keys = getKeys(keyList=["escape"])
             if keys:
                 break

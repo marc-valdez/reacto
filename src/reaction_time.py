@@ -5,11 +5,14 @@ This module contains functions for measuring reaction times in response to video
 """
 
 from psychopy.visual import TextStim, Window
-from psychopy.sound import Sound
 from psychopy.visual.movie import MovieStim
+from psychopy.sound.backend_ptb import SoundPTB
 from psychopy.event import Mouse
 
-def get_reaction_time(win: Window, movie: MovieStim, sound: Sound, stimulus_frame: int, framerate=60):
+
+def get_reaction_time(
+    win: Window, movie: MovieStim, sound: SoundPTB, stimulus_frame: int, framerate=60
+):
     """
     Measure reaction time to a stimulus in a video.
 
@@ -24,10 +27,12 @@ def get_reaction_time(win: Window, movie: MovieStim, sound: Sound, stimulus_fram
         tuple: (reaction_time_ms, verdict) where verdict is 'pass', 'too-early', or 'too_late'.
     """
 
-    frame_text = TextStim(win, text='Frame: 0', pos=(0.8, 0.9), color='white', height=0.05)
-    
+    frame_text = TextStim(
+        win, text="Frame: 0", pos=(0.8, 0.9), color="white", height=0.05
+    )
+
     """
-        Line 1298 of psychopy\visual\movies\__init__.py
+        Line 1298 of psychopy\\visual\\movies\\__init__.py
         has a bug that makes movie.frameRate not work
         
         replace `return self._player.metadata.frameRate`
@@ -35,8 +40,9 @@ def get_reaction_time(win: Window, movie: MovieStim, sound: Sound, stimulus_fram
     """
     try:
         framerate = movie.frameRate
-    except:
+    except Exception:
         framerate = framerate
+
     stimulus_time = stimulus_frame / framerate
 
     # Reset mouse for reaction measurement
@@ -45,41 +51,45 @@ def get_reaction_time(win: Window, movie: MovieStim, sound: Sound, stimulus_fram
 
     # Main video playback loop
     movie.replay()
-    if sound: sound.play()
+    if sound:
+        sound.play()
     while not movie.isFinished:
         # Display movie
         movie.draw()
         frame = movie.movieTime * framerate
-        frame_text.setText(f'Frame: {frame:.0f}')
+        frame_text.setText(f"Frame: {frame:.0f}")
         frame_text.draw()
         win.flip()
 
         # Check for input events
-        pressed = mouse.getPressed()
-        left_pressed = pressed[0]
+        buttons = mouse.getPressed()
+        left_pressed = buttons[0] if buttons else False
 
         if left_pressed:
             reaction_time = movie.movieTime
             if reaction_time < stimulus_time:
                 movie.pause()
-                if sound: sound.stop()
-                verdict = 'too-early'
+                if sound:
+                    sound.stop()
+                verdict = "too-early"
                 rt_ms = 0.0
                 break
             else:
-                movie.unload() # Unload player from memory since we won't need it anymore.
-                if sound: sound.stop()
-                verdict = 'pass'
+                movie.unload()  # Unload player from memory since we won't need it anymore.
+                if sound:
+                    sound.stop()
+                verdict = "pass"
             delta = reaction_time - stimulus_time
             rt_ms = delta * 1000
             print(f"paused@{reaction_time} - stimulus@{stimulus_time} = delta@{delta}")
             break
 
     # If no reaction detected, mark as too late
-    if 'verdict' not in locals():
+    if "verdict" not in locals():
         movie.pause()
-        if sound: sound.stop()
-        verdict = 'too_late'
+        if sound:
+            sound.stop()
+        verdict = "too_late"
         rt_ms = 0.0
 
     return rt_ms, verdict
