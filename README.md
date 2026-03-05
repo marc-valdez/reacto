@@ -86,10 +86,10 @@ What `build.sh` does:
 - Creates a virtual environment using `uv venv` if one does not exist
 - Installs platform-specific dependencies (e.g., system libraries, UPX, wxPython)
 - Installs all Python dependencies from `requirements.txt` using `uv pip`
+- Selects the correct icon format for your platform
+- Runs PyInstaller to generate a standalone executable in the appropriate `dist/` subfolder
 - Copies the `clips/` and `onboarding/` directories (if present) into a platform-specific `dist/` folder
 - Copies `example.configuration.ini` as `configuration.ini` and `README.md` into the `dist/` folder
-- Selects the correct icon format for your platform
-- Runs PyInstaller with many hidden imports and excluded modules to generate a standalone executable in the appropriate `dist/` subfolder
 
 GitHub Actions workflows are also available in the [`.github/workflows/`](.github/workflows/:1) directory for CI and build automation.
 
@@ -102,7 +102,9 @@ This project utilizes the following open-source software:
 - **Python**: The programming language
 - **Supabase**: For optional authentication and result storage
 
-Special thanks to the developers and communities behind these projects for making scientific computing and multimedia applications accessible.
+Special thanks to:
+- The developers and communities behind these projects for making scientific computing and multimedia applications accessible
+- Images sourced from [SVG Repo](https://www.svgrepo.com)
 
 ## Privacy
 
