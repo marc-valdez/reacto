@@ -4,12 +4,14 @@ Configuration Module
 Handles loading and accessing application configuration from configuration.ini
 """
 
+from pathlib import Path
 import configparser
 
 class Config:
-    def __init__(self, config_file='configuration.ini'):
+    def __init__(self, base_path: Path, config_file=Path('configuration.ini')):
         self.config = configparser.ConfigParser()
-        self.config.read(config_file)
+        config_path = base_path / config_file
+        self.config.read(config_path)
 
     def get_boolean(self, section, key, fallback=False):
         return self.config.getboolean(section, key, fallback=fallback)
@@ -32,6 +34,3 @@ class Config:
     def get_int_list(self, section, key, fallback=[], separator=','):
         str_list = self.get_list(section, key, [], separator)
         return [int(item) for item in str_list] if str_list else fallback
-
-# Global config instance
-config = Config()

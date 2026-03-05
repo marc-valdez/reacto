@@ -183,3 +183,4 @@ cython_debug/
 results.json
 configuration.ini
 .python-version
+.DS_Store

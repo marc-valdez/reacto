@@ -1,4 +1,3 @@
-import sys
 import os
 import random
 from pathlib import Path
@@ -6,15 +5,6 @@ from pathlib import Path
 from psychopy.visual import Window, TextStim, ImageStim
 from psychopy.visual.movie import MovieStim
 from psychopy.sound import Sound
-
-def get_base_path() -> Path:
-    if hasattr(sys, 'frozen'):
-        return Path(sys.executable).parent
-    else:
-        return Path(__file__).parent
-
-# Global base_path
-base_path = get_base_path()
 
 # Preload movies and sounds
 """Add to .venv\Lib\site-packages\psychopy\sound\backend_ptb.py
@@ -26,7 +16,7 @@ after Line 264 to fix issues on audio devices with channels > 2
         clip.samples = np.hstack((clip.samples, padding))
 ```
 """
-def load_clips(win: Window, dir: Path, randomize: bool=False):
+def load_clips(win: Window, base_path: Path, dir: Path, randomize: bool=False):
     clips_dir = base_path / dir
 
     movies = {}
@@ -53,7 +43,7 @@ def load_clips(win: Window, dir: Path, randomize: bool=False):
     if randomize: random.shuffle(clips)
     return clips, movies, sounds
 
-def load_images(win: Window, dir: Path):
+def load_images(win: Window, base_path: Path, dir: Path):
     images_dir = base_path / dir
     images = [f for f in images_dir.glob("*.jpg")]
     images.sort()

@@ -1,9 +1,8 @@
 from supabase import create_client
-from config import config
 
 session_file = "supabase_session.json"
 
-def authenticate():
+def authenticate(config):
     supabase = create_client(
         config.get_string("auth", "SUPABASE_URL"),
         config.get_string("auth", "SUPABASE_KEY")

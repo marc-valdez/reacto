@@ -5,8 +5,10 @@ This script runs a reaction time test using video clips from the 'clips' directo
 It displays videos, measures reaction times, and shows results.
 """
 
+import sys
 import time
 
+from pathlib import Path
 from psychopy.visual import Window
 from psychopy.monitors import Monitor
 
@@ -14,22 +16,29 @@ from reaction_time import get_reaction_time
 from results import display_result_screen, display_final_screen
 from countdown import CountdownManager
 from export import export_results
-from config import config
+from config import Config
 from auth import authenticate
 from tutorial import run_tutorial, confirm_tutorial
 from asset_loader import load_clips
+
+# Global Base Path
+if getattr(sys, 'frozen', False):
+    base_path = Path(sys.executable).parent
+else:
+    base_path = Path(__file__).parent
+
+# Configuration
+config = Config(base_path)
+enable_countdown = config.get_boolean('app', 'enable_countdown', True)
+countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
+countdown_manager = CountdownManager(countdown_durations)
+clips_dir = config.get_string('app', 'clips_directory', 'clips')
 
 # Authentication
 client, session = None, None
 if config.get_boolean('auth', 'enable_supabase', False):
     print("Authenticating with Supabase...")
-    client, session = authenticate()
-
-# Configuration
-enable_countdown = config.get_boolean('app', 'enable_countdown', True)
-countdown_durations = config.get_int_list('app', 'countdown_durations', [3, 4, 5])
-countdown_manager = CountdownManager(countdown_durations)
-clips_dir = config.get_string('app', 'clips_directory', 'clips')
+    client, session = authenticate(config)
 
 # Initialize window
 mon = Monitor(name='monitor', width=config.get_int('display', 'window_width', 1920))
@@ -42,7 +51,7 @@ win = Window(
 
 # Onboard participants with tutorial
 enable_tutorial = confirm_tutorial(win)
-if enable_tutorial: run_tutorial(win)
+if enable_tutorial: run_tutorial(win, base_path)
 
 # Data storage
 results = []
@@ -54,7 +63,7 @@ averages = {
 }
 
 # Load randomized clips
-clips, movies, sounds = load_clips(win, clips_dir, randomize=True)
+clips, movies, sounds = load_clips(win, base_path, clips_dir, randomize=True)
 
 # Capture start time
 start_time = time.time()
