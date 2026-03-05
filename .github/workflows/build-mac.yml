@@ -106,7 +106,7 @@ jobs:
           [ -f "README.md" ] && cp README.md dist/README.md || true
 
       - name: Zip dist
-        run: zip -r reacto-mac.zip -j dist/
+        run: cd dist && zip -r ../reacto-mac.zip .
         
       - name: Upload artifact
         uses: actions/upload-artifact@v4
