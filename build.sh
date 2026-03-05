@@ -105,7 +105,6 @@ uv run pyinstaller --distpath "$DIST_DIR" --onedir --clean --name reacto --icon 
     --exclude-module pillow \
     --exclude-module proglog \
     --exclude-module psutil \
-    --exclude-module psychtoolbox \
     --exclude-module py-cpuinfo \
     --exclude-module pyarrow \
     --exclude-module pyparallel \
