@@ -26,7 +26,7 @@ jobs:
 
       - name: Build executable
         run: |
-          python -m PyInstaller --onefile --clean --name reacto --icon reacto.ico `
+          python -m PyInstaller --onedir --clean --name reacto --icon reacto.ico `
             --hidden-import psychopy.visual.backends.pygletbackend `
             --hidden-import psychopy.visual.movies `
             --hidden-import psychopy.sound.backend_ptb `
@@ -100,22 +100,22 @@ jobs:
       - name: Prepare dist folder
         run: |
           if (Test-Path "clips") {
-            New-Item -ItemType Directory -Force -Path "dist\clips"
-            Copy-Item -Recurse "clips\*" "dist\clips\"
+            New-Item -ItemType Directory -Force -Path "dist\reacto\clips"
+            Copy-Item -Recurse "clips\*" "dist\reacto\clips\"
           }
           if (Test-Path "onboarding") {
-            New-Item -ItemType Directory -Force -Path "dist\onboarding"
-            Copy-Item -Recurse "onboarding\*" "dist\onboarding\"
+            New-Item -ItemType Directory -Force -Path "dist\reacto\onboarding"
+            Copy-Item -Recurse "onboarding\*" "dist\reacto\onboarding\"
           }
           if (Test-Path "example.configuration.ini") {
-            Copy-Item "example.configuration.ini" "dist\configuration.ini"
+            Copy-Item "example.configuration.ini" "dist\reacto\configuration.ini"
           }
           if (Test-Path "README.md") {
-            Copy-Item "README.md" "dist\README.md"
+            Copy-Item "README.md" "dist\reacto\README.md"
           }
 
       - name: Zip dist
-        run: Compress-Archive -Path dist\* -DestinationPath reacto-windows.zip
+        run: Compress-Archive -Path dist\reacto -DestinationPath reacto-windows.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

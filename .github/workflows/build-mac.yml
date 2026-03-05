@@ -26,7 +26,7 @@ jobs:
 
       - name: Build executable
         run: |
-          python -m PyInstaller --onefile --clean --name reacto --icon=reacto.icns \
+          python -m PyInstaller --onedir --clean --name reacto --icon=reacto.icns \
             --hidden-import psychopy.visual.backends.pygletbackend \
             --hidden-import psychopy.visual.movies \
             --hidden-import psychopy.sound.backend_ptb \
@@ -99,13 +99,13 @@ jobs:
 
       - name: Prepare dist folder
         run: |
-          [ -d "clips" ] && cp -r clips dist/clips || true
-          [ -d "onboarding" ] && cp -r onboarding dist/onboarding || true
-          [ -f "example.configuration.ini" ] && cp example.configuration.ini dist/configuration.ini || true
-          [ -f "README.md" ] && cp README.md dist/README.md || true
+          [ -d "clips" ] && mkdir -p dist/reacto/clips && cp -r clips/* dist/reacto/clips/ || true
+          [ -d "onboarding" ] && mkdir -p dist/reacto/onboarding && cp -r onboarding/* dist/reacto/onboarding/ || true
+          [ -f "example.configuration.ini" ] && cp example.configuration.ini dist/reacto/configuration.ini || true
+          [ -f "README.md" ] && cp README.md dist/reacto/README.md || true
 
       - name: Zip dist
-        run: cd dist && zip -r ../reacto-mac.zip .
+        run: cd dist && zip -r ../reacto-mac.zip reacto
         
       - name: Upload artifact
         uses: actions/upload-artifact@v4
