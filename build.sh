@@ -21,13 +21,13 @@ DIST_DIR="dist/$PLATFORM"
 
 # Install uv if not available
 if ! command -v uv &> /dev/null; then
-    if [[ "$PLATFORM" == "windows" ]]; then
-        winget install --id astral-sh.uv || true
-    elif [[ "$PLATFORM" == "linux" ]]; then
+    if [[ "$PLATFORM" == "linux" ]]; then
         curl -LsSf https://astral.sh/uv/install.sh | sh
         source "$HOME/.local/bin/env"
-    else
+    elif [[ "$PLATFORM" == "mac" ]]; then
         brew install uv
+    elif [[ "$PLATFORM" == "windows" ]]; then
+        winget install --id astral-sh.uv || true
     fi
 fi
 
