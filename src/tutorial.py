@@ -2,10 +2,10 @@ from pathlib import Path
 from psychopy import event
 from psychopy.visual import ImageStim, Window, TextStim
 
-from countdown import CountdownManager
-from results import display_result_screen
-from reaction_time import get_reaction_time
-from asset_loader import load_clips, load_images
+from src.countdown import CountdownManager
+from src.results import display_result_screen
+from src.reaction_time import get_reaction_time
+from src.asset_loader import load_clips, load_images
 
 def press_space_to_continue(win: Window):
     continue_text = "Press SPACE to continue"

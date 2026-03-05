@@ -12,14 +12,14 @@ from pathlib import Path
 from psychopy.visual import Window
 from psychopy.monitors import Monitor
 
-from reaction_time import get_reaction_time
-from results import display_result_screen, display_final_screen
-from countdown import CountdownManager
-from export import export_results
-from config import Config
-from auth import authenticate
-from tutorial import run_tutorial, confirm_tutorial
-from asset_loader import load_clips
+from src.reaction_time import get_reaction_time
+from src.results import display_result_screen, display_final_screen
+from src.countdown import CountdownManager
+from src.export import export_results
+from src.config import Config
+from src.auth import authenticate
+from src.tutorial import run_tutorial, confirm_tutorial
+from src.asset_loader import load_clips
 
 # Global Base Path
 if getattr(sys, 'frozen', False):
