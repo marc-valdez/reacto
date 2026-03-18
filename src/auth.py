@@ -25,7 +25,8 @@ def authenticate(config: Config):
     print(f"Logged in as {email}.")
 
     try:
-        supabase.rpc("init_participant_or_block").execute()
+        age = input("Plese enter your age: ")
+        supabase.rpc("init_participant", {"age": int(age)}).execute()
     except Exception:
         print("You have already completed this test.")
         supabase.auth.sign_out()

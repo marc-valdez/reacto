@@ -108,9 +108,10 @@ Special thanks to:
 
 ## Privacy
 
-When Supabase authentication is enabled, the application collects your **email address** for authentication purposes.  
+When Supabase authentication is enabled, the application collects your **email address** and **age** for authentication purposes.  
 The release builds include my public Reacto database keys and is enabled by default.
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+   
